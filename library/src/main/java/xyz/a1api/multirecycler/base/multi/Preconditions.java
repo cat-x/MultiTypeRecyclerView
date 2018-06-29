@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
 
 /**
  * @author drakeet
  */
-class BinderNotFoundException extends RuntimeException {
+@SuppressWarnings("WeakerAccess")
+public final class Preconditions {
 
-    BinderNotFoundException(@NonNull Class<?> clazz) {
-        super("Do you have registered {className}.class to the binder in the adapter/pool?"
-                .replace("{className}", clazz.getSimpleName()));
+    @SuppressWarnings("ConstantConditions")
+    public static @NonNull
+    <T> T checkNotNull(@NonNull final T object) {
+        if (object == null) {
+            throw new NullPointerException();
+        }
+        return object;
+    }
+
+
+    private Preconditions() {
     }
 }

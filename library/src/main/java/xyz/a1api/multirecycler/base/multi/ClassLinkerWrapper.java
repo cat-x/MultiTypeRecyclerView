@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 
+import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.base.Binder;
+
 /**
  * @author drakeet
  */
-final class ClassLinkerWrapper<T> implements Linker<T> {
+public final class ClassLinkerWrapper<T, VH extends BaseViewHolder> implements Linker<T> {
 
     private final @NonNull
-    ClassLinker<T> classLinker;
+    ClassLinker<T, VH> classLinker;
     private final @NonNull
-    ItemViewBinder<T, ?>[] binders;
+    Binder<T, ?>[] binders;
 
 
     private ClassLinkerWrapper(
-            @NonNull ClassLinker<T> classLinker,
-            @NonNull ItemViewBinder<T, ?>[] binders) {
+            @NonNull ClassLinker<T, VH> classLinker,
+            @NonNull Binder<T, VH>[] binders) {
         this.classLinker = classLinker;
         this.binders = binders;
     }
 
 
-    static @NonNull
-    <T> ClassLinkerWrapper<T> wrap(
-            @NonNull ClassLinker<T> classLinker,
-            @NonNull ItemViewBinder<T, ?>[] binders) {
-        return new ClassLinkerWrapper<T>(classLinker, binders);
+    public static @NonNull
+    <T, VH extends BaseViewHolder> ClassLinkerWrapper<T, VH> wrap(
+            @NonNull ClassLinker<T, VH> classLinker,
+            @NonNull Binder<T, VH>[] binders) {
+        return new ClassLinkerWrapper<T, VH>(classLinker, binders);
     }
 
 

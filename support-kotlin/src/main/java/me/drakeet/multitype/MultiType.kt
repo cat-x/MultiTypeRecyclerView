@@ -17,7 +17,10 @@
 package me.drakeet.multitype
 
 
-import xyz.a1api.multirecycler.multi.*
+import xyz.a1api.multirecycler.base.multi.Linker
+import xyz.a1api.multirecycler.base.multi.OneToManyEndpoint
+import xyz.a1api.multirecycler.base.multi.OneToManyFlow
+import xyz.a1api.multirecycler.base.multi.TypePool
 import kotlin.reflect.KClass
 
 /**

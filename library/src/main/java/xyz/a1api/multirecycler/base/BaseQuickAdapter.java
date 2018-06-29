@@ -17,6 +17,7 @@ package xyz.a1api.multirecycler.base;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.support.annotation.CheckResult;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
@@ -28,6 +29,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutParams;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +45,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import xyz.a1api.multirecycler.base.animation.AlphaInAnimation;
@@ -56,16 +58,22 @@ import xyz.a1api.multirecycler.base.animation.SlideInRightAnimation;
 import xyz.a1api.multirecycler.base.entity.IExpandable;
 import xyz.a1api.multirecycler.base.loadmore.LoadMoreView;
 import xyz.a1api.multirecycler.base.loadmore.SimpleLoadMoreView;
-import xyz.a1api.multirecycler.base.util.MultiTypeDelegate;
+import xyz.a1api.multirecycler.base.multi.BinderNotFoundException;
+import xyz.a1api.multirecycler.base.multi.DefaultLinker;
+import xyz.a1api.multirecycler.base.multi.Linker;
+import xyz.a1api.multirecycler.base.multi.MultiTypePool;
+import xyz.a1api.multirecycler.base.multi.OneToManyFlow;
+import xyz.a1api.multirecycler.base.multi.TypePool;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static xyz.a1api.multirecycler.base.multi.Preconditions.checkNotNull;
 
 
 /**
  * https://github.com/CymChad/BaseRecyclerViewAdapterHelper
  */
-public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends RecyclerView.Adapter<K> {
+public class BaseQuickAdapter<MU extends BaseViewHolder> extends RecyclerView.Adapter<MU> {
 
     //load more
     private boolean mNextLoadEnable = false;
@@ -125,9 +133,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     protected static final String TAG = BaseQuickAdapter.class.getSimpleName();
     protected Context mContext;
-    protected int mLayoutResId;
     protected LayoutInflater mLayoutInflater;
-    protected List<T> mData;
+
+    protected @NonNull
+    List<Object> mData;
     public static final int HEADER_VIEW = 0x00000111;
     public static final int LOADING_VIEW = 0x00000222;
     public static final int FOOTER_VIEW = 0x00000333;
@@ -143,7 +152,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         mRecyclerView = recyclerView;
     }
 
-    private void checkNotNull() {
+    private void checkRecyclerViewNotNull() {
         if (getRecyclerView() == null) {
             throw new RuntimeException("please bind recyclerView first!");
         }
@@ -190,22 +199,22 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @see #disableLoadMoreIfNotFullPage(RecyclerView)
      */
     public void disableLoadMoreIfNotFullPage() {
-        checkNotNull();
+        checkRecyclerViewNotNull();
         disableLoadMoreIfNotFullPage(getRecyclerView());
     }
 
     /**
-     * check if full page after {@link #setNewData(List)}, if full, it will enable load more again.
+     * check if full page after {@link #setData(List)}, if full, it will enable load more again.
      * <p>
      * 不是配置项！！
      * <p>
-     * 这个方法是用来检查是否满一屏的，所以只推荐在 {@link #setNewData(List)} 之后使用
+     * 这个方法是用来检查是否满一屏的，所以只推荐在 {@link #setData(List)} 之后使用
      * 原理很简单，先关闭 load more，检查完了再决定是否开启
      * <p>
      * 不是配置项！！
      *
      * @param recyclerView your recyclerView
-     * @see #setNewData(List)
+     * @see #setData(List)
      */
     public void disableLoadMoreIfNotFullPage(RecyclerView recyclerView) {
         setEnableLoadMore(false);
@@ -459,26 +468,36 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         notifyItemChanged(position + getHeaderLayoutCount());
     }
 
+
+    public BaseQuickAdapter(@Nullable List<Object> data, @NonNull TypePool pool) {
+        this.mData = data == null ? Collections.emptyList() : data;
+        this.typePool = pool;
+    }
+
+    /**
+     * Same as QuickAdapter#QuickAdapter(Context,int) but with
+     * some initialization data and an initial capacity of TypePool..
+     *
+     * @param data            A new list is created out of this one to avoid mutable list
+     * @param initialCapacity the initial capacity of TypePool
+     */
+    public BaseQuickAdapter(@Nullable List<Object> data, int initialCapacity) {
+        this(data, new MultiTypePool(initialCapacity));
+    }
+
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
      * some initialization data.
      *
-     * @param layoutResId The layout resource id of each item.
-     * @param data        A new list is created out of this one to avoid mutable list
+     * @param data A new list is created out of this one to avoid mutable list
      */
-    public BaseQuickAdapter(@LayoutRes int layoutResId, @Nullable List<T> data) {
-        this.mData = data == null ? new ArrayList<T>() : data;
-        if (layoutResId != 0) {
-            this.mLayoutResId = layoutResId;
-        }
+    public BaseQuickAdapter(@Nullable List<Object> data) {
+        this(data, new MultiTypePool());
     }
 
-    public BaseQuickAdapter(@Nullable List<T> data) {
-        this(0, data);
-    }
 
-    public BaseQuickAdapter(@LayoutRes int layoutResId) {
-        this(layoutResId, null);
+    public BaseQuickAdapter() {
+        this(null);
     }
 
     /**
@@ -486,8 +505,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      *
      * @param data
      */
-    public void setNewData(@Nullable List<T> data) {
-        this.mData = data == null ? new ArrayList<T>() : data;
+    public void setData(@Nullable List<Object> data) {
+        this.mData = data == null ? Collections.emptyList() : data;
         if (mRequestLoadMoreListener != null) {
             mNextLoadEnable = true;
             mLoadMoreEnable = true;
@@ -507,7 +526,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @deprecated use {@link #addData(int, Object)} instead
      */
     @Deprecated
-    public void add(@IntRange(from = 0) int position, @NonNull T item) {
+    public void add(@IntRange(from = 0) int position, @NonNull Object item) {
         addData(position, item);
     }
 
@@ -516,7 +535,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      *
      * @param position
      */
-    public void addData(@IntRange(from = 0) int position, @NonNull T data) {
+    public void addData(@IntRange(from = 0) int position, @NonNull Object data) {
         mData.add(position, data);
         notifyItemInserted(position + getHeaderLayoutCount());
         compatibilityDataSizeChanged(1);
@@ -525,7 +544,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * add one new data
      */
-    public void addData(@NonNull T data) {
+    public void addData(@NonNull Object data) {
         mData.add(data);
         notifyItemInserted(mData.size() + getHeaderLayoutCount());
         compatibilityDataSizeChanged(1);
@@ -547,7 +566,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * change data
      */
-    public void setData(@IntRange(from = 0) int index, @NonNull T data) {
+    public void setData(@IntRange(from = 0) int index, @NonNull Object data) {
         mData.set(index, data);
         notifyItemChanged(index + getHeaderLayoutCount());
     }
@@ -558,7 +577,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param position the insert position
      * @param newData  the new data collection
      */
-    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends T> newData) {
+    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends Object> newData) {
         mData.addAll(position, newData);
         notifyItemRangeInserted(position + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
@@ -569,19 +588,19 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      *
      * @param newData the new data collection
      */
-    public void addData(@NonNull Collection<? extends T> newData) {
+    public void addData(@NonNull Collection<? extends Object> newData) {
         mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
     }
 
     /**
-     * use data to replace all item in mData. this method is different {@link #setNewData(List)},
+     * use data to replace all item in mData. this method is different {@link #setData(List)},
      * it doesn't change the mData reference
      *
      * @param data data collection
      */
-    public void replaceData(@NonNull Collection<? extends T> data) {
+    public void replaceData(@NonNull Collection<? extends Object> data) {
         // 不是同一个引用才清空列表
         if (data != mData) {
             mData.clear();
@@ -608,7 +627,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @return 列表数据
      */
     @NonNull
-    public List<T> getData() {
+    public List<Object> getData() {
         return mData;
     }
 
@@ -620,9 +639,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @return The data at the specified position.
      */
     @Nullable
-    public T getItem(@IntRange(from = 0) int position) {
+    @SuppressWarnings("unchecked")
+    public <T> T getItem(@IntRange(from = 0) int position) {
         if (position >= 0 && position < mData.size())
-            return mData.get(position);
+            return (T) mData.get(position);
         else
             return null;
     }
@@ -748,15 +768,20 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     protected int getDefItemViewType(int position) {
-        if (mMultiTypeDelegate != null) {
-            return mMultiTypeDelegate.getDefItemViewType(mData, position);
+        try {
+            Object item = mData.get(position);
+            return indexInTypesOf(position, item);
+        } catch (BinderNotFoundException e) {//Todo 是否需要兼容
+            e.printStackTrace();
         }
         return super.getItemViewType(position);
     }
 
+    @NonNull
     @Override
-    public K onCreateViewHolder(ViewGroup parent, int viewType) {
-        K baseViewHolder = null;
+    @SuppressWarnings("unchecked")
+    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        BaseViewHolder baseViewHolder = null;
         this.mContext = parent.getContext();
         this.mLayoutInflater = LayoutInflater.from(mContext);
         switch (viewType) {
@@ -764,26 +789,29 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 baseViewHolder = getLoadingView(parent);
                 break;
             case HEADER_VIEW:
-                baseViewHolder = createBaseViewHolder(mHeaderLayout);
+                baseViewHolder = new BaseViewHolder(mHeaderLayout);
                 break;
             case EMPTY_VIEW:
-                baseViewHolder = createBaseViewHolder(mEmptyLayout);
+                baseViewHolder = new BaseViewHolder(mEmptyLayout);
                 break;
             case FOOTER_VIEW:
-                baseViewHolder = createBaseViewHolder(mFooterLayout);
+                baseViewHolder = new BaseViewHolder(mFooterLayout);
                 break;
             default:
-                baseViewHolder = onCreateDefViewHolder(parent, viewType);
+                Binder<?, ?> binder = typePool.getItemViewBinder(viewType);
+                baseViewHolder = onCreateDefViewHolder(parent, viewType, binder);
                 bindViewClickListener(baseViewHolder);
+                break;
         }
         baseViewHolder.setAdapter(this);
         return baseViewHolder;
 
     }
 
-    private K getLoadingView(ViewGroup parent) {
+    @SuppressWarnings("unchecked")
+    private BaseViewHolder getLoadingView(ViewGroup parent) {
         View view = getItemView(mLoadMoreView.getLayoutId(), parent);
-        K holder = createBaseViewHolder(view);
+        BaseViewHolder holder = new BaseViewHolder(view);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -826,7 +854,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param holder
      */
     @Override
-    public void onViewAttachedToWindow(K holder) {
+    public void onViewAttachedToWindow(BaseViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
         if (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type == LOADING_VIEW) {
@@ -929,7 +957,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @see #getDefItemViewType(int)
      */
     @Override
-    public void onBindViewHolder(K holder, int position) {
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         //Add up fetch logic, almost like load more, but simpler.
         autoUpFetch(position);
         //Do not move position, need to change before LoadMoreView binding
@@ -937,9 +965,6 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
-            case 0:
-                convert(holder, getItem(position - getHeaderLayoutCount()));
-                break;
             case LOADING_VIEW:
                 mLoadMoreView.convert(holder);
                 break;
@@ -950,7 +975,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             case FOOTER_VIEW:
                 break;
             default:
-                convert(holder, getItem(position - getHeaderLayoutCount()));
+                typePool.getItemViewBinder(viewType).convert(holder, getItem(position - getHeaderLayoutCount()));
                 break;
         }
     }
@@ -1002,26 +1027,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return getOnItemLongClickListener().onItemLongClick(BaseQuickAdapter.this, v, position);
     }
 
-    private MultiTypeDelegate<T> mMultiTypeDelegate;
-
-    public void setMultiTypeDelegate(MultiTypeDelegate<T> multiTypeDelegate) {
-        mMultiTypeDelegate = multiTypeDelegate;
+    protected BaseViewHolder onCreateDefViewHolder(ViewGroup parent, int viewType, Binder binder) {
+        int layoutId = binder.getLayoutId();
+        return createBaseViewHolder(parent, layoutId, binder);
     }
 
-    public MultiTypeDelegate<T> getMultiTypeDelegate() {
-        return mMultiTypeDelegate;
-    }
-
-    protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
-        int layoutId = mLayoutResId;
-        if (mMultiTypeDelegate != null) {
-            layoutId = mMultiTypeDelegate.getLayoutId(viewType);
-        }
-        return createBaseViewHolder(parent, layoutId);
-    }
-
-    protected K createBaseViewHolder(ViewGroup parent, int layoutResId) {
-        return createBaseViewHolder(getItemView(layoutResId, parent));
+    protected BaseViewHolder createBaseViewHolder(ViewGroup parent, int layoutResId, Binder binder) {
+        return createBaseViewHolder(getItemView(layoutResId, parent), binder);
     }
 
     /**
@@ -1032,21 +1044,21 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @return new ViewHolder
      */
     @SuppressWarnings("unchecked")
-    protected K createBaseViewHolder(View view) {
-        Class temp = getClass();
+    protected BaseViewHolder createBaseViewHolder(View view, Binder binder) {
+        Class temp = binder.getClass();
         Class z = null;
         while (z == null && null != temp) {
             z = getInstancedGenericKClass(temp);
             temp = temp.getSuperclass();
         }
-        K k;
+        BaseViewHolder k;
         // 泛型擦除会导致z为null
         if (z == null) {
-            k = (K) new BaseViewHolder(view);
+            k = (BaseViewHolder) new BaseViewHolder(view);
         } else {
             k = createGenericKInstance(z, view);
         }
-        return k != null ? k : (K) new BaseViewHolder(view);
+        return k != null ? k : (BaseViewHolder) new BaseViewHolder(view);
     }
 
     /**
@@ -1057,18 +1069,18 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @return
      */
     @SuppressWarnings("unchecked")
-    private K createGenericKInstance(Class z, View view) {
+    private BaseViewHolder createGenericKInstance(Class z, View view) {
         try {
             Constructor constructor;
             // inner and unstatic class
             if (z.isMemberClass() && !Modifier.isStatic(z.getModifiers())) {
                 constructor = z.getDeclaredConstructor(getClass(), View.class);
                 constructor.setAccessible(true);
-                return (K) constructor.newInstance(this, view);
+                return (BaseViewHolder) constructor.newInstance(this, view);
             } else {
                 constructor = z.getDeclaredConstructor(View.class);
                 constructor.setAccessible(true);
-                return (K) constructor.newInstance(view);
+                return (BaseViewHolder) constructor.newInstance(view);
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -1100,8 +1112,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                     }
                 } else if (temp instanceof ParameterizedType) {
                     Type rawType = ((ParameterizedType) temp).getRawType();
-                    if (rawType instanceof Class && BaseViewHolder.class.isAssignableFrom((Class<?>) rawType)) {
-                        return (Class<?>) rawType;
+                    if (rawType instanceof Class && BaseViewHolder.class.isAssignableFrom((Class<Object>) rawType)) {
+                        return (Class<Object>) rawType;
                     }
                 }
             }
@@ -1351,6 +1363,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return -1;
     }
 
+
     public void setEmptyView(int layoutResId, ViewGroup viewGroup) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutResId, viewGroup, false);
         setEmptyView(view);
@@ -1358,13 +1371,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
-     * Recommend you to use {@link #setEmptyView(layoutResId, viewGroup)}
+     * Recommend you to use {@link #setEmptyView(int layoutResId, ViewGroup viewGroup)}
      *
      * @see #bindToRecyclerView(RecyclerView)
      */
     @Deprecated
     public void setEmptyView(int layoutResId) {
-        checkNotNull();
+        checkRecyclerViewNotNull();
         setEmptyView(layoutResId, getRecyclerView());
     }
 
@@ -1592,14 +1605,6 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     /**
-     * Implement this method and use the helper to adapt the view to the given item.
-     *
-     * @param helper A fully initialized helper.
-     * @param item   The item that needs to be displayed.
-     */
-    protected abstract void convert(K helper, T item);
-
-    /**
      * get the specific view by position,e.g. getViewByPosition(2, R.id.textView)
      * <p>
      * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
@@ -1608,7 +1613,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Nullable
     public View getViewByPosition(int position, @IdRes int viewId) {
-        checkNotNull();
+        checkRecyclerViewNotNull();
         return getViewByPosition(getRecyclerView(), position, viewId);
     }
 
@@ -1632,7 +1637,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Override
     public long getItemId(int position) {
-        return position;
+        Object item = mData.get(position);
+        int itemViewType = getItemViewType(position);
+        Binder binder = typePool.getItemViewBinder(itemViewType);
+        long id = binder.getItemId(item);
+        if (id == RecyclerView.NO_ID) {
+            return position;
+        }
+        return id;
     }
 
     @SuppressWarnings("unchecked")
@@ -1721,7 +1733,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     public int expandAll(int position, boolean animate, boolean notify) {
         position -= getHeaderLayoutCount();
 
-        T endItem = null;
+        Object endItem = null;
         if (position + 1 < this.mData.size()) {
             endItem = getItem(position + 1);
         }
@@ -1739,7 +1751,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
         int count = expand(position + getHeaderLayoutCount(), false, false);
         for (int i = position + 1; i < this.mData.size(); i++) {
-            T item = getItem(i);
+            Object item = getItem(i);
 
             if (item == endItem) {
                 break;
@@ -1780,18 +1792,18 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     @SuppressWarnings("unchecked")
     private int recursiveCollapse(@IntRange(from = 0) int position) {
-        T item = getItem(position);
+        Object item = getItem(position);
         if (!isExpandable(item)) {
             return 0;
         }
         IExpandable expandable = (IExpandable) item;
         int subItemCount = 0;
         if (expandable.isExpanded()) {
-            List<T> subItems = expandable.getSubItems();
+            List<Object> subItems = expandable.getSubItems();
             if (null == subItems) return 0;
 
             for (int i = subItems.size() - 1; i >= 0; i--) {
-                T subItem = subItems.get(i);
+                Object subItem = subItems.get(i);
                 int pos = getItemPosition(subItem);
                 if (pos < 0) {
                     continue;
@@ -1855,7 +1867,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return collapse(position, animate, true);
     }
 
-    private int getItemPosition(T item) {
+    private int getItemPosition(Object item) {
         return item != null && mData != null && !mData.isEmpty() ? mData.indexOf(item) : -1;
     }
 
@@ -1867,12 +1879,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return list != null && list.size() > 0;
     }
 
-    public boolean isExpandable(T item) {
+    public boolean isExpandable(Object item) {
         return item != null && item instanceof IExpandable;
     }
 
     private IExpandable getExpandableItem(int position) {
-        T item = getItem(position);
+        Object item = getItem(position);
         if (isExpandable(item)) {
             return (IExpandable) item;
         } else {
@@ -1888,7 +1900,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * if the item's level is negative which mean do not implement this, return a negative
      * if the item is not exist in the data list, return a negative.
      */
-    public int getParentPosition(@NonNull T item) {
+    public int getParentPosition(@NonNull Object item) {
         int position = getItemPosition(item);
         if (position == -1) {
             return -1;
@@ -1909,7 +1921,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
 
         for (int i = position; i >= 0; i--) {
-            T temp = mData.get(i);
+            Object temp = mData.get(i);
             if (temp instanceof IExpandable) {
                 IExpandable expandable = (IExpandable) temp;
                 if (expandable.getLevel() >= 0 && expandable.getLevel() < level) {
@@ -2062,4 +2074,129 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     public final OnItemChildLongClickListener getOnItemChildLongClickListener() {
         return mOnItemChildLongClickListener;
     }
+
+    private @NonNull
+    TypePool typePool;
+
+    /**
+     * Registers a type class and its item view binder. If you have registered the class,
+     * it will override the original binder(s). Note that the method is non-thread-safe
+     * so that you should not use it in concurrent operation.
+     * <p>
+     * Note that the method should not be called after
+     * {@link RecyclerView#setAdapter(RecyclerView.Adapter)}, or you have to call the setAdapter
+     * again.
+     * </p>
+     *
+     * @param clazz  the class of a item
+     * @param binder the item view binder
+     * @param <T>    the item data type
+     */
+    public <T, VH extends BaseViewHolder> void register(@NonNull Class<? extends T> clazz, @NonNull Binder<T, VH> binder) {
+        checkNotNull(clazz);
+        checkNotNull(binder);
+        checkAndRemoveAllTypesIfNeeded(clazz);
+        register(clazz, binder, new DefaultLinker<T>());
+    }
+
+
+    <T, VH extends BaseViewHolder> void register(@NonNull Class<? extends T> clazz, @NonNull Binder<T, VH> binder, @NonNull Linker<T> linker) {
+        typePool.register(clazz, binder, linker);
+        binder.adapter = this;
+    }
+
+    /**
+     * Registers a type class to multiple item view binders. If you have registered the
+     * class, it will override the original binder(s). Note that the method is non-thread-safe
+     * so that you should not use it in concurrent operation.
+     * <p>
+     * Note that the method should not be called after
+     * {@link RecyclerView#setAdapter(RecyclerView.Adapter)}, or you have to call the setAdapter
+     * again.
+     * </p>
+     *
+     * @param clazz the class of a item
+     * @param <T>   the item data type
+     * @return {@link OneToManyFlow} for setting the binders
+     * @see #register(Class, Binder)
+     */
+    @CheckResult
+    public @NonNull
+    <T, VH extends BaseViewHolder> OneToManyFlow<T, VH> register(@NonNull Class<? extends T> clazz) {
+        checkNotNull(clazz);
+        checkAndRemoveAllTypesIfNeeded(clazz);
+        return new OneToManyBuilder<>(this, clazz);
+    }
+
+
+    /**
+     * Registers all of the contents in the specified type pool. If you have registered a
+     * class, it will override the original binder(s). Note that the method is non-thread-safe
+     * so that you should not use it in concurrent operation.
+     * <p>
+     * Note that the method should not be called after
+     * {@link RecyclerView#setAdapter(RecyclerView.Adapter)}, or you have to call the setAdapter
+     * again.
+     * </p>
+     *
+     * @param pool type pool containing contents to be added to this adapter inner pool
+     * @see #register(Class, Binder)
+     * @see #register(Class)
+     */
+    public void registerAll(@NonNull final TypePool pool) {
+        checkNotNull(pool);
+        final int size = pool.size();
+        for (int i = 0; i < size; i++) {
+            registerWithoutChecking(
+                    pool.getClass(i),
+                    pool.getItemViewBinder(i),
+                    pool.getLinker(i)
+            );
+        }
+    }
+
+    /**
+     * Set the TypePool to hold the types and view binders.
+     *
+     * @param typePool the TypePool implementation
+     */
+    public void setTypePool(@NonNull TypePool typePool) {
+        checkNotNull(typePool);
+        this.typePool = typePool;
+    }
+
+
+    public @NonNull
+    TypePool getTypePool() {
+        return typePool;
+    }
+
+    int indexInTypesOf(int position, @NonNull Object item) throws BinderNotFoundException {
+        int index = typePool.firstIndexOf(item.getClass());
+        if (index != -1) {
+            @SuppressWarnings("unchecked")
+            Linker<Object> linker = (Linker<Object>) typePool.getLinker(index);
+            return index + linker.index(position, item);
+        }
+        throw new BinderNotFoundException(item.getClass());
+    }
+
+
+    private void checkAndRemoveAllTypesIfNeeded(@NonNull Class<?> clazz) {
+        if (typePool.unregister(clazz)) {
+            Log.w(TAG, "You have registered the " + clazz.getSimpleName() + " type. " +
+                    "It will override the original binder(s).");
+        }
+    }
+
+
+    /**
+     * A safe register method base on the TypePool's safety for TypePool.
+     */
+    @SuppressWarnings("unchecked")
+    private void registerWithoutChecking(@NonNull Class clazz, @NonNull Binder binder, @NonNull Linker linker) {
+        checkAndRemoveAllTypesIfNeeded(clazz);
+        register(clazz, binder, linker);
+    }
+
 }

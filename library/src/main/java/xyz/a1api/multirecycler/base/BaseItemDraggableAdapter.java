@@ -2,6 +2,7 @@ package xyz.a1api.multirecycler.base;
 
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -15,11 +16,12 @@ import xyz.a1api.multirecycler.R;
 import xyz.a1api.multirecycler.base.callback.ItemDragAndSwipeCallback;
 import xyz.a1api.multirecycler.base.listener.OnItemDragListener;
 import xyz.a1api.multirecycler.base.listener.OnItemSwipeListener;
+import xyz.a1api.multirecycler.base.multi.TypePool;
 
 /**
  * Created by luoxw on 2016/7/13.
  */
-public abstract class BaseItemDraggableAdapter<T, K extends BaseViewHolder> extends BaseQuickAdapter<T, K> {
+public abstract class BaseItemDraggableAdapter<K extends BaseViewHolder> extends BaseQuickAdapter<K> {
 
     private static final int NO_TOGGLE_VIEW = 0;
     protected int mToggleViewId = NO_TOGGLE_VIEW;
@@ -35,13 +37,16 @@ public abstract class BaseItemDraggableAdapter<T, K extends BaseViewHolder> exte
 
     private static final String ERROR_NOT_SAME_ITEMTOUCHHELPER = "Item drag and item swipe should pass the same ItemTouchHelper";
 
-
-    public BaseItemDraggableAdapter(List<T> data) {
-        super(data);
+    public BaseItemDraggableAdapter(@Nullable List<Object> data, @NonNull TypePool pool) {
+        super(data, pool);
     }
 
-    public BaseItemDraggableAdapter(int layoutResId, List<T> data) {
-        super(layoutResId, data);
+    public BaseItemDraggableAdapter(@Nullable List<Object> data, int initialCapacity) {
+        super(data, initialCapacity);
+    }
+
+    public BaseItemDraggableAdapter(@Nullable List<Object> data) {
+        super(data);
     }
 
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
 
 /**
  * @author drakeet
  */
-final class DefaultLinker<T> implements Linker<T> {
+public final class DefaultLinker<T> implements Linker<T> {
 
     @Override
     public int index(int position, @NonNull T t) {

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
+
+import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.base.Binder;
 
 /**
  * An ordered collection to hold the types, binders and linkers.
@@ -33,9 +36,9 @@ public interface TypePool {
      * @param linker the linker to link the class and view binder
      * @param <T>    the item data type
      */
-    <T> void register(
+    <T, VH extends BaseViewHolder> void register(
             @NonNull Class<? extends T> clazz,
-            @NonNull ItemViewBinder<T, ?> binder,
+            @NonNull Binder<T, VH> binder,
             @NonNull Linker<T> linker);
 
     /**
@@ -83,7 +86,7 @@ public interface TypePool {
      * @throws IndexOutOfBoundsException if the index is out of range
      */
     @NonNull
-    ItemViewBinder<?, ?> getItemViewBinder(int index);
+    Binder<?, ?> getItemViewBinder(int index);
 
     /**
      * Gets the linker at the specified index.

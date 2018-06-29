@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
+
+import xyz.a1api.multirecycler.base.BaseViewHolder;
 
 /**
  * End-operators for one-to-many.
  *
  * @author drakeet
  */
-public interface OneToManyEndpoint<T> {
+public interface OneToManyEndpoint<T, VH extends BaseViewHolder> {
 
     /**
      * Sets a linker to link the items and binders by array index.
@@ -39,5 +41,5 @@ public interface OneToManyEndpoint<T> {
      * @param classLinker the class linker
      * @see ClassLinker
      */
-    void withClassLinker(@NonNull ClassLinker<T> classLinker);
+    void withClassLinker(@NonNull ClassLinker<T, VH> classLinker);
 }

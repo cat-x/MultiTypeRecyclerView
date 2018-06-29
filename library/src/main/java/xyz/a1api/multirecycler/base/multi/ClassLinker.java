@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
-import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
+import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.base.Binder;
+
 /**
- * Process and flow operators for one-to-many.
+ * An interface to link the items and binders by the classes of binders.
  *
  * @author drakeet
  */
-public interface OneToManyFlow<T> {
+public interface ClassLinker<T, VH extends BaseViewHolder> {
 
     /**
-     * Sets some item view binders to the item type.
+     * Returns the class of your registered binders for your item.
      *
-     * @param binders the item view binders
-     * @return end flow operator
+     * @param position The position in items
+     * @param t        The item
+     * @return The index of your registered binders
+     * @see OneToManyEndpoint#withClassLinker(ClassLinker)
      */
-    @CheckResult
-    @SuppressWarnings("unchecked")
     @NonNull
-    OneToManyEndpoint<T> to(@NonNull ItemViewBinder<T, ?>... binders);
+    Class<? extends Binder<VH, ?>> index(int position, @NonNull T t);
 }

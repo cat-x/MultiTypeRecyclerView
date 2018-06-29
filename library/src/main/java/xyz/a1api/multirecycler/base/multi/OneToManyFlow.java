@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
+import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.base.Binder;
+
 /**
+ * Process and flow operators for one-to-many.
+ *
  * @author drakeet
  */
-@SuppressWarnings("WeakerAccess")
-public final class Preconditions {
+public interface OneToManyFlow<T, VH extends BaseViewHolder> {
 
-    @SuppressWarnings("ConstantConditions")
-    public static @NonNull
-    <T> T checkNotNull(@NonNull final T object) {
-        if (object == null) {
-            throw new NullPointerException();
-        }
-        return object;
-    }
-
-
-    private Preconditions() {
-    }
+    /**
+     * Sets some item view binders to the item type.
+     *
+     * @param binders the item view binders
+     * @return end flow operator
+     */
+    @CheckResult
+    @SuppressWarnings("unchecked")
+    @NonNull
+    OneToManyEndpoint<T, VH> to(@NonNull Binder<T, VH>... binders);
 }

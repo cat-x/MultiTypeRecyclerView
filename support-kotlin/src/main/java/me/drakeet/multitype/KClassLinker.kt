@@ -16,7 +16,6 @@
 
 package me.drakeet.multitype
 
-import xyz.a1api.multirecycler.multi.ItemViewBinder
 import kotlin.reflect.KClass
 
 /**

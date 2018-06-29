@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base.multi;
 
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static xyz.a1api.multirecycler.multi.Preconditions.checkNotNull;
+import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.base.Binder;
+
+import static xyz.a1api.multirecycler.base.multi.Preconditions.checkNotNull;
 
 /**
  * An List implementation of TypePool.
@@ -33,7 +36,7 @@ public class MultiTypePool implements TypePool {
     private final @NonNull
     List<Class<?>> classes;
     private final @NonNull
-    List<ItemViewBinder<?, ?>> binders;
+    List<Binder<?, ?>> binders;
     private final @NonNull
     List<Linker<?>> linkers;
 
@@ -69,7 +72,7 @@ public class MultiTypePool implements TypePool {
      */
     public MultiTypePool(
             @NonNull List<Class<?>> classes,
-            @NonNull List<ItemViewBinder<?, ?>> binders,
+            @NonNull List<Binder<?, ?>> binders,
             @NonNull List<Linker<?>> linkers) {
         checkNotNull(classes);
         checkNotNull(binders);
@@ -81,9 +84,9 @@ public class MultiTypePool implements TypePool {
 
 
     @Override
-    public <T> void register(
+    public <T, VH extends BaseViewHolder> void register(
             @NonNull Class<? extends T> clazz,
-            @NonNull ItemViewBinder<T, ?> binder,
+            @NonNull Binder<T, VH> binder,
             @NonNull Linker<T> linker) {
         checkNotNull(clazz);
         checkNotNull(binder);
@@ -144,7 +147,7 @@ public class MultiTypePool implements TypePool {
 
     @Override
     public @NonNull
-    ItemViewBinder<?, ?> getItemViewBinder(int index) {
+    Binder<?, ?> getItemViewBinder(int index) {
         return binders.get(index);
     }
 

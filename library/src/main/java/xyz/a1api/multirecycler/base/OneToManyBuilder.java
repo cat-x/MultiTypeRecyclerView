@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package xyz.a1api.multirecycler.multi;
+package xyz.a1api.multirecycler.base;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
-import static xyz.a1api.multirecycler.multi.Preconditions.checkNotNull;
+import xyz.a1api.multirecycler.base.multi.ClassLinker;
+import xyz.a1api.multirecycler.base.multi.ClassLinkerWrapper;
+import xyz.a1api.multirecycler.base.multi.Linker;
+import xyz.a1api.multirecycler.base.multi.OneToManyEndpoint;
+import xyz.a1api.multirecycler.base.multi.OneToManyFlow;
+
+import static xyz.a1api.multirecycler.base.multi.Preconditions.checkNotNull;
 
 /**
  * @author drakeet
  */
-class OneToManyBuilder<T> implements OneToManyFlow<T>, OneToManyEndpoint<T> {
+class OneToManyBuilder<T, VH extends BaseViewHolder> implements OneToManyFlow<T, VH>, OneToManyEndpoint<T, VH> {
 
     private final @NonNull
-    MultiTypeAdapter adapter;
+    BaseQuickAdapter adapter;
     private final @NonNull
     Class<? extends T> clazz;
-    private ItemViewBinder<T, ?>[] binders;
+    private Binder<T, VH>[] binders;
 
 
-    OneToManyBuilder(@NonNull MultiTypeAdapter adapter, @NonNull Class<? extends T> clazz) {
+    OneToManyBuilder(@NonNull BaseQuickAdapter adapter, @NonNull Class<? extends T> clazz) {
         this.clazz = clazz;
         this.adapter = adapter;
     }
@@ -43,7 +49,7 @@ class OneToManyBuilder<T> implements OneToManyFlow<T>, OneToManyEndpoint<T> {
     @CheckResult
     @SafeVarargs
     public final @NonNull
-    OneToManyEndpoint<T> to(@NonNull ItemViewBinder<T, ?>... binders) {
+    OneToManyEndpoint to(@NonNull Binder<T, VH>... binders) {
         checkNotNull(binders);
         this.binders = binders;
         return this;
@@ -58,14 +64,14 @@ class OneToManyBuilder<T> implements OneToManyFlow<T>, OneToManyEndpoint<T> {
 
 
     @Override
-    public void withClassLinker(@NonNull ClassLinker<T> classLinker) {
+    public void withClassLinker(@NonNull ClassLinker<T, VH> classLinker) {
         checkNotNull(classLinker);
         doRegister(ClassLinkerWrapper.wrap(classLinker, binders));
     }
 
 
     private void doRegister(@NonNull Linker<T> linker) {
-        for (ItemViewBinder<T, ?> binder : binders) {
+        for (Binder<T, VH> binder : binders) {
             adapter.register(clazz, binder, linker);
         }
     }
