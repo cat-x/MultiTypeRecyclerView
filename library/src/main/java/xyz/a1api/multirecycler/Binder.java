@@ -1,0 +1,66 @@
+package xyz.a1api.multirecycler;
+
+/**
+ * Created by Cat-x on 2018/6/29.
+ * For MultiTypeRecyclerView
+ * Cat-x All Rights Reserved
+ */
+
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
+public abstract class Binder<T, VH extends BaseViewHolder> {
+
+    BaseQuickAdapter adapter;
+
+    public BaseQuickAdapter getAdapter() {
+        return adapter;
+    }
+
+    public abstract @LayoutRes
+    int getLayoutId();
+
+
+//    public abstract void convert(VH holder, T item);
+
+    public abstract void convert(@NonNull VH holder, @NonNull Object item);
+
+    void bind(@NonNull BaseViewHolder holder, @NonNull Object item) {
+        convert((VH) holder, item);
+    }
+
+    /**
+     * Return the stable ID for the <code>item</code>. If {@link RecyclerView.Adapter#hasStableIds()}
+     * would return false this method should return {@link RecyclerView#NO_ID}. The default
+     * implementation of this method returns {@link RecyclerView#NO_ID}.
+     *
+     * @param item The item within the MultiTypeAdapter's items data set to query
+     * @return the stable ID of the item
+     * @see RecyclerView.Adapter#setHasStableIds(boolean)
+     * @since v3.2.0
+     */
+    public long getItemId(@NonNull T item) {
+        return RecyclerView.NO_ID;
+    }
+
+
+    public VH getViewHolder(BaseQuickAdapter adapter, View view) {
+        Class temp = getClass();
+        Class z = null;
+        while (z == null && null != temp) {
+            z = ClassUtil.getInstancedGenericKClass(temp);
+            temp = temp.getSuperclass();
+        }
+        VH vh;
+        // 泛型擦除会导致z为null
+        if (z == null) {
+            vh = (VH) new BaseViewHolder(view);
+        } else {
+            vh = ClassUtil.createGenericKInstance(adapter, z, view);
+        }
+        return vh != null ? vh : (VH) new BaseViewHolder(view);
+    }
+
+}

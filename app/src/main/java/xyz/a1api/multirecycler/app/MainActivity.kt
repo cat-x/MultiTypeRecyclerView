@@ -1,13 +1,13 @@
 package xyz.a1api.multirecycler.app
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.support.design.widget.BottomNavigationView
+
+import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import xyz.a1api.multirecycler.base.BaseQuickAdapter
-import xyz.a1api.multirecycler.base.BaseViewHolder
-import xyz.a1api.multirecycler.base.Binder
-import xyz.a1api.multirecycler.base.multi.ClassLinker
+import xyz.a1api.multirecycler.BaseQuickAdapter
+import xyz.a1api.multirecycler.BaseViewHolder
+import xyz.a1api.multirecycler.Binder
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        BaseQuickAdapter().register<String, BaseViewHolder>(String::class.java).to(object : Binder<String, BaseViewHolder>() {
-            override fun <K : BaseViewHolder?> convert(holder: K, item: Any) {
+        BaseQuickAdapter().register<String>(String::class.java).to(object : Binder<String, BaseViewHolder>() {
+            override fun convert(holder: BaseViewHolder, item: Any) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
@@ -41,15 +41,13 @@ class MainActivity : AppCompatActivity() {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
-        }).withClassLinker(object : ClassLinker<String, BaseViewHolder> {
-            override fun index(position: Int, t: String): Class<out Binder<BaseViewHolder, *>> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
+        }).withClassLinker { position, t ->
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
 
-        val ad = BaseQuickAdapter().register(String::class.java, object : Binder<String, BaseViewHolder>() {
-            override fun <K : BaseViewHolder?> convert(holder: K, item: Any) {
+        val ad = BaseQuickAdapter().register(String::class.java, object : Binder<String, HBaseViewHolder>() {
+            override fun convert(holder: HBaseViewHolder, item: Any) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 

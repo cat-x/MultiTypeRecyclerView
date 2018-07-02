@@ -2,7 +2,7 @@ package xyz.a1api.multirecycler.app;
 
 import android.view.View;
 
-import xyz.a1api.multirecycler.base.BaseViewHolder;
+import xyz.a1api.multirecycler.BaseViewHolder;
 
 /**
  * Created by Cat-x on 2018/6/29.

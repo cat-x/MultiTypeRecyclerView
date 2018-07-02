@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-package me.drakeet.multitype
+package xyz.a1api.multirecycler.multi;
 
-import xyz.a1api.multirecycler.BaseViewHolder
-import xyz.a1api.multirecycler.Binder
-import kotlin.reflect.KClass
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+
+import xyz.a1api.multirecycler.Binder;
 
 /**
- * An interface to link the items and binders by the classes of binders.
+ * An interface to link the items and binders by array integer index.
  *
  * @author drakeet
  */
-interface KClassLinker<T> {
+public interface Linker<T> {
 
     /**
-     * Returns the class of your registered binders for your item.
+     * Returns the index of your registered binders for your item. The result should be in range of
+     * {@code [0, one-to-multiple-binders.length)}.
+     *
+     * <p>Note: The argument of {@link OneToManyFlow#to(Binder[])} is the
+     * one-to-multiple-binders.</p>
      *
      * @param position The position in items
-     * @param t The item
+     * @param t        Your item data
      * @return The index of your registered binders
-     * @see OneToManyEndpoint.withClassLinker
+     * @see OneToManyFlow#to(Binder[])
+     * @see OneToManyEndpoint#withLinker(Linker)
      */
-    fun index(position: Int, t: T): KClass<out Binder<out BaseViewHolder, *>>
+    @IntRange(from = 0)
+    int index(int position, @NonNull T t);
 }

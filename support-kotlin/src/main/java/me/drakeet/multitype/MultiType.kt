@@ -17,31 +17,34 @@
 package me.drakeet.multitype
 
 
-import xyz.a1api.multirecycler.base.multi.Linker
-import xyz.a1api.multirecycler.base.multi.OneToManyEndpoint
-import xyz.a1api.multirecycler.base.multi.OneToManyFlow
-import xyz.a1api.multirecycler.base.multi.TypePool
+import xyz.a1api.multirecycler.BaseQuickAdapter
+import xyz.a1api.multirecycler.BaseViewHolder
+import xyz.a1api.multirecycler.Binder
+import xyz.a1api.multirecycler.multi.Linker
+import xyz.a1api.multirecycler.multi.OneToManyEndpoint
+import xyz.a1api.multirecycler.multi.OneToManyFlow
+import xyz.a1api.multirecycler.multi.TypePool
 import kotlin.reflect.KClass
 
 /**
  * @author drakeet
  */
-fun <T : Any> MultiTypeAdapter.register(clazz: KClass<out T>, binder: ItemViewBinder<T, *>) {
+fun <T : Any, VH : BaseViewHolder> BaseQuickAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>) {
     register(clazz.java, binder)
 }
 
 
-inline fun <reified T : Any> MultiTypeAdapter.register(binder: ItemViewBinder<T, *>) {
+inline fun <reified T : Any, VH : BaseViewHolder> BaseQuickAdapter.register(binder: Binder<T, VH>) {
     register(T::class.java, binder)
 }
 
 
-fun <T : Any> MultiTypeAdapter.register(clazz: KClass<out T>): OneToManyFlow<T> {
+fun <T : Any> BaseQuickAdapter.register(clazz: KClass<out T>): OneToManyFlow<T> {
     return register(clazz.java)
 }
 
 
-fun <T : Any> TypePool.register(clazz: KClass<out T>, binder: ItemViewBinder<T, *>, linker: Linker<T>) {
+fun <T : Any, VH : BaseViewHolder> TypePool.register(clazz: KClass<out T>, binder: Binder<T, VH>, linker: Linker<T>) {
     register(clazz.java, binder, linker)
 }
 
@@ -61,6 +64,6 @@ fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: KClassLinker<T>) {
 }
 
 
-fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: (position: Int, t: T) -> KClass<out ItemViewBinder<T, *>>) {
+fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: (position: Int, t: T) -> KClass<out Binder<out BaseViewHolder, *>>) {
     withClassLinker { position, t -> classLinker(position, t).java }
 }

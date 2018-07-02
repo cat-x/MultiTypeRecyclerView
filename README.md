@@ -1,16 +1,60 @@
-### 从命令行创建一个新的仓库
+## 更快捷的RecyclerView适配库
+
+这是一个还正在开发中的库，不承担任何风险
+本库计划从网络上流行的众多RecyclerView适配库中整合创建出一个跟高效快捷的RecyclerView适配库。
+目前已初步整合  
+me.drakeet.multitype:multitype[^multitype],  
+com.github.CymChad:BaseRecyclerViewAdapterHelper[^baseRecy]  
+
+
+## Getting started
+
+In your root path  `build.gradle`:
+
+```groovy
+allprojects {
+        repositories {
+            maven { url "https://jitpack.io" }
+        }
+    }
+```
+In your Application Dir `build.gradle`:
+```groovy
+dependencies {
+    implementation 
+}
+```
+
+## Usage
+
+##  Thanks
+https://github.com/drakeet/MultiType[^multitype]
+https://github.com/CymChad/BaseRecyclerViewAdapterHelper[^baseRecy]
+
+
+[^multitype]:[https://github.com/drakeet/MultiType
+](https://github.com/drakeet/MultiType)
+
+[^baseRecy]:[https://github.com/CymChad/BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+
+## License
+
+
+>引用库代码Copyright属于原作者
+
 
 ~~~
-touch README.md
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin http://47.98.130.212:3001/Cat/MultiTypeRecyclerView.git
-git push -u origin master
-~~~
+    Copyright cat-x.
 
-### 从命令行推送已经创建的仓库
-~~~
-git remote add origin http://47.98.130.212:3001/Cat/MultiTypeRecyclerView.git
-git push -u origin master
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 ~~~
