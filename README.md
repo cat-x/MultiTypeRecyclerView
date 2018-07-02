@@ -1,10 +1,10 @@
 ## 更快捷的RecyclerView适配库
 
-这是一个还正在开发中的库，不承担任何风险
-本库计划从网络上流行的众多RecyclerView适配库中整合创建出一个跟高效快捷的RecyclerView适配库。
+这是一个还正在开发中的库，不承担任何风险  
+本库计划从网络上流行的众多RecyclerView适配库中整合创建出一个跟高效快捷的RecyclerView适配库。  
 目前已初步整合  
-me.drakeet.multitype:multitype[^multitype],  
-com.github.CymChad:BaseRecyclerViewAdapterHelper[^baseRecy]  
+me.drakeet.multitype:multitype[1],  
+com.github.CymChad:BaseRecyclerViewAdapterHelper[2]  
 
 
 ## Getting started
@@ -21,21 +21,20 @@ allprojects {
 In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
-    implementation 
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.01'
 }
 ```
 
 ## Usage
 
 ##  Thanks
-https://github.com/drakeet/MultiType[^multitype]
-https://github.com/CymChad/BaseRecyclerViewAdapterHelper[^baseRecy]
+https://github.com/drakeet/MultiType[1]  
+https://github.com/CymChad/BaseRecyclerViewAdapterHelper[2]
 
 
-[^multitype]:[https://github.com/drakeet/MultiType
-](https://github.com/drakeet/MultiType)
+[1]:[https://github.com/drakeet/MultiType](https://github.com/drakeet/MultiType)
 
-[^baseRecy]:[https://github.com/CymChad/BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+[2]:[https://github.com/CymChad/BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
 
 ## License
 
