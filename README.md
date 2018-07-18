@@ -5,7 +5,7 @@
 本库计划从网络上流行的众多RecyclerView适配库中整合创建出一个跟高效快捷的RecyclerView适配库。  
 目前已初步整合  
 me.drakeet.multitype:multitype,  
-com.github.CymChad:BaseRecyclerViewAdapterHelper 
+com.github.CymChad:BaseRecyclerViewAdapterHelper   
 计划引入  
 [ru.noties:scrollable](https://github.com/noties/Scrollable)  
 [rouchuan.viewpagerlayoutmanager:viewpagerlayoutmanager](https://github.com/leochuan/ViewPagerLayoutManager)  
@@ -24,7 +24,7 @@ allprojects {
 In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.1'
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.11'
 }
 ```
 
