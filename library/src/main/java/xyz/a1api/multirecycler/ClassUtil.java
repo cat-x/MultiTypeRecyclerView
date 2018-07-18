@@ -51,7 +51,7 @@ public class ClassUtil {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <K, T extends BaseQuickAdapter> K createGenericKInstance(T adapter, Class z, View view) {
+    public static <K, T extends BaseMultiAdapter> K createGenericKInstance(T adapter, Class z, View view) {
         try {
             Constructor constructor;
             // inner and unstatic class

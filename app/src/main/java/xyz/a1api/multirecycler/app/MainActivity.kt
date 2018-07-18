@@ -2,10 +2,9 @@ package xyz.a1api.multirecycler.app
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
-
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import xyz.a1api.multirecycler.BaseQuickAdapter
+import xyz.a1api.multirecycler.BaseMultiAdapter
 import xyz.a1api.multirecycler.BaseViewHolder
 import xyz.a1api.multirecycler.Binder
 
@@ -32,10 +31,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        BaseQuickAdapter().register<String>(String::class.java).to(object : Binder<String, BaseViewHolder>() {
-            override fun convert(holder: BaseViewHolder, item: Any) {
+        BaseMultiAdapter().register<String>(String::class.java).to(object : Binder<String, BaseViewHolder>() {
+            override fun convert(holder: BaseViewHolder, item: String, position: Int) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
+
 
             override fun getLayoutId(): Int {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -46,15 +46,15 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val ad = BaseQuickAdapter().register(String::class.java, object : Binder<String, HBaseViewHolder>() {
-            override fun convert(holder: HBaseViewHolder, item: Any) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
+        val ad = BaseMultiAdapter().register(String::class.java, object : Binder<String, HBaseViewHolder>() {
 
             override fun getLayoutId(): Int {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
+            override fun convert(holder: HBaseViewHolder, item: String, position: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
         }
         )
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)

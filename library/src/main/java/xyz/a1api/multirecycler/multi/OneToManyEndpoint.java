@@ -18,6 +18,8 @@ package xyz.a1api.multirecycler.multi;
 
 import android.support.annotation.NonNull;
 
+import xyz.a1api.multirecycler.BaseMultiAdapter;
+
 /**
  * End-operators for one-to-many.
  *
@@ -31,7 +33,7 @@ public interface OneToManyEndpoint<T> {
      * @param linker the row linker
      * @see Linker
      */
-    void withLinker(@NonNull Linker<T> linker);
+    BaseMultiAdapter withLinker(@NonNull Linker<T> linker);
 
     /**
      * Sets a class linker to link the items and binders by the class instance of binders.
@@ -39,5 +41,5 @@ public interface OneToManyEndpoint<T> {
      * @param classLinker the class linker
      * @see ClassLinker
      */
-    void withClassLinker(@NonNull ClassLinker<T> classLinker);
+    BaseMultiAdapter withClassLinker(@NonNull ClassLinker<T> classLinker);
 }

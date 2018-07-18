@@ -17,7 +17,7 @@
 package me.drakeet.multitype
 
 
-import xyz.a1api.multirecycler.BaseQuickAdapter
+import xyz.a1api.multirecycler.BaseMultiAdapter
 import xyz.a1api.multirecycler.BaseViewHolder
 import xyz.a1api.multirecycler.Binder
 import xyz.a1api.multirecycler.multi.Linker
@@ -29,17 +29,17 @@ import kotlin.reflect.KClass
 /**
  * @author drakeet
  */
-fun <T : Any, VH : BaseViewHolder> BaseQuickAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>) {
+fun <T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>) {
     register(clazz.java, binder)
 }
 
 
-inline fun <reified T : Any, VH : BaseViewHolder> BaseQuickAdapter.register(binder: Binder<T, VH>) {
+inline fun <reified T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(binder: Binder<T, VH>) {
     register(T::class.java, binder)
 }
 
 
-fun <T : Any> BaseQuickAdapter.register(clazz: KClass<out T>): OneToManyFlow<T> {
+fun <T : Any> BaseMultiAdapter.register(clazz: KClass<out T>): OneToManyFlow<T> {
     return register(clazz.java)
 }
 

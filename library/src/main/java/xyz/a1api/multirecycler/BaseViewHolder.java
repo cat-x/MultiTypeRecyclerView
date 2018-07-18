@@ -15,20 +15,25 @@
  */
 package xyz.a1api.multirecycler;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Checkable;
@@ -37,6 +42,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -62,7 +71,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     private final LinkedHashSet<Integer> childClickViewIds;
 
     private final LinkedHashSet<Integer> itemChildLongClickViewIds;
-    private BaseQuickAdapter adapter;
+    private BaseMultiAdapter adapter;
     /**
      * use itemView instead
      */
@@ -112,6 +121,13 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return convertView;
     }
 
+    public Context getContext() {
+        if (itemView != null) {
+            return itemView.getContext();
+        }
+        return null;
+    }
+
     /**
      * Will set the text of a TextView.
      *
@@ -130,6 +146,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         view.setText(strId);
         return this;
     }
+
 
     /**
      * Will set the image of an ImageView from a resource id.
@@ -164,7 +181,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @param backgroundRes A resource to use as a background.
      * @return The BaseViewHolder for chaining.
      */
-    public BaseViewHolder setBackgroundRes(@IdRes int viewId, @DrawableRes int backgroundRes) {
+    public BaseViewHolder setBackgroundResource(@IdRes int viewId, @DrawableRes int backgroundRes) {
         View view = getView(viewId);
         view.setBackgroundResource(backgroundRes);
         return this;
@@ -180,6 +197,16 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     public BaseViewHolder setTextColor(@IdRes int viewId, @ColorInt int textColor) {
         TextView view = getView(viewId);
         view.setTextColor(textColor);
+        return this;
+    }
+
+    public BaseViewHolder setTextAppearance(@IdRes int viewId, @StyleRes int resId) {
+        TextView view = getView(viewId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            view.setTextAppearance(resId);
+        } else {
+            view.setTextAppearance(getContext(), resId);
+        }
         return this;
     }
 
@@ -206,20 +233,84 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    public BaseViewHolder setImageUrl(@IdRes int viewId, String url) {
+        ImageView view = getView(viewId);
+        handImage(url, view, -1, null);
+        return this;
+    }
+
+    public BaseViewHolder setImageUrl(@IdRes int viewId, String url, @DrawableRes int placeholderId) {
+        ImageView view = getView(viewId);
+        handImage(url, view, placeholderId, null);
+        return this;
+    }
+
+    public BaseViewHolder setImageUrl(@IdRes int viewId, String url, Drawable placeholder) {
+        ImageView view = getView(viewId);
+        handImage(url, view, -1, placeholder);
+        return this;
+    }
+
+    private void handImage(String url, ImageView view, @DrawableRes int placeholderId, Drawable placeholder) {
+        boolean isFindGlide = false;
+        boolean isFindPicasso = false;
+        try {
+            Class.forName("com.bumptech.glide.Glide");
+            isFindGlide = true;
+        } catch (ClassNotFoundException e) {
+            //e.printStackTrace();
+        }
+        try {
+            Class.forName("com.bumptech.glide.Glide");
+            isFindPicasso = true;
+        } catch (ClassNotFoundException e) {
+            //e.printStackTrace();
+        }
+
+        if (isFindGlide) {
+            if (placeholderId != -1) {
+                Glide.with(view).load(url).apply(RequestOptions.placeholderOf(placeholderId)).into(view);
+            } else if (placeholder != null) {
+                Glide.with(view).load(url).apply(RequestOptions.placeholderOf(placeholder)).into(view);
+            } else {
+                Glide.with(view).load(url).into(view);
+            }
+        } else if (isFindPicasso) {
+            if (placeholderId != -1) {
+                Picasso.get().load(url).placeholder(placeholderId).into(view);
+            } else if (placeholder != null) {
+                Picasso.get().load(url).placeholder(placeholder).into(view);
+            } else {
+                Picasso.get().load(url).into(view);
+            }
+        } else {
+            Log.e("BaseViewHolder", "you call setImageUrl(int viewId, String url),but don't contain Glide or Picasso");
+        }
+    }
+
+
+    public BaseViewHolder startAnimation(@IdRes int viewId, Animation animation) {
+        getView(viewId).startAnimation(animation);
+        return this;
+    }
+
+    public BaseViewHolder startAnimationDrawable(@IdRes int viewId, @DrawableRes int drawable) {
+        ImageView view = getView(viewId);
+        view.setImageResource(drawable);
+        ((AnimationDrawable) view.getDrawable()).start();
+        return this;
+    }
+
     /**
      * Add an action to set the alpha of a view. Can be called multiple times.
      * Alpha between 0-1.
      */
     public BaseViewHolder setAlpha(@IdRes int viewId, float value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getView(viewId).setAlpha(value);
-        } else {
-            // Pre-honeycomb hack to set Alpha value
-            AlphaAnimation alpha = new AlphaAnimation(value, value);
-            alpha.setDuration(0);
-            alpha.setFillAfter(true);
-            getView(viewId).startAnimation(alpha);
-        }
+        // Pre-honeycomb hack to set Alpha value
+        AlphaAnimation alpha = new AlphaAnimation(value, value);
+        alpha.setDuration(0);
+        alpha.setFillAfter(true);
+        getView(viewId).startAnimation(alpha);
         return this;
     }
 
@@ -237,15 +328,15 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * Set a view visibility to VISIBLE (true) or INVISIBLE (false).
+     * Set a view visibility
      *
      * @param viewId  The view id.
-     * @param visible True for VISIBLE, false for INVISIBLE.
+     * @param visible One of {@link View#VISIBLE}, {@link View#INVISIBLE}, or {@link View#GONE}.
      * @return The BaseViewHolder for chaining.
      */
-    public BaseViewHolder setVisible(@IdRes int viewId, boolean visible) {
+    public BaseViewHolder setVisibility(@IdRes int viewId, int visible) {
         View view = getView(viewId);
-        view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        view.setVisibility(visible);
         return this;
     }
 
@@ -308,6 +399,11 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         ProgressBar view = getView(viewId);
         view.setMax(max);
         view.setProgress(progress);
+        return this;
+    }
+
+    public BaseViewHolder setProgress(@IdRes int viewId, long progress, long max) {
+        setProgress(viewId, (int) progress, (int) max);
         return this;
     }
 
@@ -446,7 +542,6 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @param listener The on touch listener;
      * @return The BaseViewHolder for chaining.
      */
-    @Deprecated
     public BaseViewHolder setOnTouchListener(@IdRes int viewId, View.OnTouchListener listener) {
         View view = getView(viewId);
         view.setOnTouchListener(listener);
@@ -461,7 +556,6 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @return The BaseViewHolder for chaining.
      * Please use {@link #addOnLongClickListener(int)} (adapter.setOnItemChildLongClickListener(listener))}
      */
-    @Deprecated
     public BaseViewHolder setOnLongClickListener(@IdRes int viewId, View.OnLongClickListener listener) {
         View view = getView(viewId);
         view.setOnLongClickListener(listener);
@@ -476,10 +570,14 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @return The BaseViewHolder for chaining.
      * Please use {@link #addOnClickListener(int)} (int)} (adapter.setOnItemChildClickListener(listener))}
      */
-    @Deprecated
     public BaseViewHolder setOnItemClickListener(@IdRes int viewId, AdapterView.OnItemClickListener listener) {
         AdapterView view = getView(viewId);
         view.setOnItemClickListener(listener);
+        return this;
+    }
+
+    public BaseViewHolder setOnClickListener(View.OnClickListener listener) {
+        itemView.setOnClickListener(listener);
         return this;
     }
 
@@ -585,7 +683,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @param adapter The adapter;
      * @return The BaseViewHolder for chaining.
      */
-    protected BaseViewHolder setAdapter(BaseQuickAdapter adapter) {
+    protected BaseViewHolder setAdapter(BaseMultiAdapter adapter) {
         this.adapter = adapter;
         return this;
     }

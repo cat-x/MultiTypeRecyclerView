@@ -1,14 +1,11 @@
 package xyz.a1api.multirecycler.layoutmanager;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.widget.LinearLayout;
-
-import xyz.a1api.multirecycler.BaseQuickAdapter;
 
 /**
  * Created by Cat-x on 2018/7/3.
@@ -17,28 +14,9 @@ import xyz.a1api.multirecycler.BaseQuickAdapter;
  */
 public class MultiLayoutManger {
 
-    public interface ISpanSize {
-        int getSpanSize(Object data);
-    }
-
     public static GridLayoutManager bindGridLayoutManager(final RecyclerView recyclerView, int spanCount) {
-        return bindGridLayoutManager(recyclerView, spanCount, null);
-    }
-
-    public static GridLayoutManager bindGridLayoutManager(final RecyclerView recyclerView, int spanCount, @Nullable final ISpanSize iSpanSize) {
         GridLayoutManager layoutManager = new GridLayoutManager(recyclerView.getContext(), spanCount);
-        if (iSpanSize != null) {
-            GridLayoutManager.SpanSizeLookup spanSizeLookup = new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    Object item = ((BaseQuickAdapter) recyclerView.getAdapter()).getItem(position);
-                    return iSpanSize.getSpanSize(item);
-                }
-            };
-            layoutManager.setSpanSizeLookup(spanSizeLookup);
-        }
-        recyclerView.setLayoutManager(layoutManager);
-        return layoutManager;
+        return bindLayoutManager(recyclerView, layoutManager);
     }
 
     public static LinearLayoutManager bindHLinearLayoutManager(final RecyclerView recyclerView) {
@@ -52,12 +30,25 @@ public class MultiLayoutManger {
     public static LinearLayoutManager bindLinearLayoutManager(final RecyclerView recyclerView, @RecyclerView.Orientation int orientation) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(recyclerView.getContext());
         layoutManager.setOrientation(orientation);
+        return bindLayoutManager(recyclerView, layoutManager);
+    }
+
+    public static StaggeredGridLayoutManager bindStaggeredLayoutManager(final RecyclerView recyclerView, int spanCount, @RecyclerView.Orientation int orientation) {
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(spanCount, orientation);
+        return bindLayoutManager(recyclerView, layoutManager);
+    }
+
+    public static <LM extends GridLayoutManager> LM bindLayoutManager(final RecyclerView recyclerView, LM layoutManager) {
         recyclerView.setLayoutManager(layoutManager);
         return layoutManager;
     }
 
-    public static StaggeredGridLayoutManager bindStaggeredGridLayoutManager(final RecyclerView recyclerView, int spanCount, @RecyclerView.Orientation int orientation) {
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(spanCount, orientation);
+    public static <LM extends LinearLayoutManager> LM bindLayoutManager(final RecyclerView recyclerView, LM layoutManager) {
+        recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
+    }
+
+    public static <LM extends StaggeredGridLayoutManager> LM bindLayoutManager(final RecyclerView recyclerView, LM layoutManager) {
         recyclerView.setLayoutManager(layoutManager);
         return layoutManager;
     }

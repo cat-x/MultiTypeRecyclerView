@@ -2,7 +2,7 @@ package xyz.a1api.multirecycler.listener;
 
 import android.view.View;
 
-import xyz.a1api.multirecycler.BaseQuickAdapter;
+import xyz.a1api.multirecycler.BaseMultiAdapter;
 
 /**
  * Created by AllenCoder on 2016/8/03.
@@ -12,24 +12,24 @@ import xyz.a1api.multirecycler.BaseQuickAdapter;
  **/
 public abstract class OnItemChildLongClickListener extends SimpleClickListener {
     @Override
-    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+    public void onItemClick(BaseMultiAdapter adapter, View view, int position) {
 
     }
 
     @Override
-    public void onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+    public void onItemLongClick(BaseMultiAdapter adapter, View view, int position) {
 
     }
 
     @Override
-    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+    public void onItemChildClick(BaseMultiAdapter adapter, View view, int position) {
 
     }
 
     @Override
-    public void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+    public void onItemChildLongClick(BaseMultiAdapter adapter, View view, int position) {
         onSimpleItemChildLongClick(adapter, view, position);
     }
 
-    public abstract void onSimpleItemChildLongClick(BaseQuickAdapter adapter, View view, int position);
+    public abstract void onSimpleItemChildLongClick(BaseMultiAdapter adapter, View view, int position);
 }

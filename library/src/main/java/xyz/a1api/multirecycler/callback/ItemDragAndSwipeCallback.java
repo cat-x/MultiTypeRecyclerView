@@ -6,7 +6,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import xyz.a1api.multirecycler.BaseItemDraggableAdapter;
-import xyz.a1api.multirecycler.BaseQuickAdapter;
+import xyz.a1api.multirecycler.BaseMultiAdapter;
 import xyz.a1api.multirecycler.R;
 
 /**
@@ -185,7 +185,7 @@ public class ItemDragAndSwipeCallback extends ItemTouchHelper.Callback {
 
     private boolean isViewCreateByAdapter(RecyclerView.ViewHolder viewHolder) {
         int type = viewHolder.getItemViewType();
-        return type == BaseQuickAdapter.HEADER_VIEW || type == BaseQuickAdapter.LOADING_VIEW
-                || type == BaseQuickAdapter.FOOTER_VIEW || type == BaseQuickAdapter.EMPTY_VIEW;
+        return type == BaseMultiAdapter.HEADER_VIEW || type == BaseMultiAdapter.LOADING_VIEW
+                || type == BaseMultiAdapter.FOOTER_VIEW || type == BaseMultiAdapter.EMPTY_VIEW;
     }
 }

@@ -32,13 +32,13 @@ import xyz.a1api.multirecycler.multi.Preconditions;
 class OneToManyBuilder<T> implements OneToManyFlow<T>, OneToManyEndpoint<T> {
 
     private final @NonNull
-    BaseQuickAdapter adapter;
+    BaseMultiAdapter adapter;
     private final @NonNull
     Class<? extends T> clazz;
     private Binder<T, ? extends BaseViewHolder>[] binders;
 
 
-    OneToManyBuilder(@NonNull BaseQuickAdapter adapter, @NonNull Class<? extends T> clazz) {
+    OneToManyBuilder(@NonNull BaseMultiAdapter adapter, @NonNull Class<? extends T> clazz) {
         this.clazz = clazz;
         this.adapter = adapter;
     }
@@ -56,16 +56,18 @@ class OneToManyBuilder<T> implements OneToManyFlow<T>, OneToManyEndpoint<T> {
 
 
     @Override
-    public void withLinker(@NonNull Linker<T> linker) {
+    public BaseMultiAdapter withLinker(@NonNull Linker<T> linker) {
         Preconditions.checkNotNull(linker);
         doRegister(linker);
+        return adapter;
     }
 
 
     @Override
-    public void withClassLinker(@NonNull ClassLinker<T> classLinker) {
+    public BaseMultiAdapter withClassLinker(@NonNull ClassLinker<T> classLinker) {
         Preconditions.checkNotNull(classLinker);
         doRegister(ClassLinkerWrapper.wrap(classLinker, binders));
+        return adapter;
     }
 
 

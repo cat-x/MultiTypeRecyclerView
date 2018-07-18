@@ -3,7 +3,7 @@ package xyz.a1api.multirecycler.loadmore;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 
-import xyz.a1api.multirecycler.BaseQuickAdapter;
+import xyz.a1api.multirecycler.BaseMultiAdapter;
 import xyz.a1api.multirecycler.BaseViewHolder;
 
 /**
@@ -83,7 +83,7 @@ public abstract class LoadMoreView {
      * No more data is hidden
      *
      * @return true for no more data hidden load more
-     * @deprecated Use {@link BaseQuickAdapter#loadMoreEnd(boolean)} instead.
+     * @deprecated Use {@link BaseMultiAdapter#loadMoreEnd(boolean)} instead.
      */
     @Deprecated
     public boolean isLoadEndGone() {

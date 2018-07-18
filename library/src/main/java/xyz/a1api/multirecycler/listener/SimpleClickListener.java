@@ -10,13 +10,13 @@ import android.view.View;
 
 import java.util.Set;
 
-import xyz.a1api.multirecycler.BaseQuickAdapter;
+import xyz.a1api.multirecycler.BaseMultiAdapter;
 import xyz.a1api.multirecycler.BaseViewHolder;
 
-import static xyz.a1api.multirecycler.BaseQuickAdapter.EMPTY_VIEW;
-import static xyz.a1api.multirecycler.BaseQuickAdapter.FOOTER_VIEW;
-import static xyz.a1api.multirecycler.BaseQuickAdapter.HEADER_VIEW;
-import static xyz.a1api.multirecycler.BaseQuickAdapter.LOADING_VIEW;
+import static xyz.a1api.multirecycler.BaseMultiAdapter.EMPTY_VIEW;
+import static xyz.a1api.multirecycler.BaseMultiAdapter.FOOTER_VIEW;
+import static xyz.a1api.multirecycler.BaseMultiAdapter.HEADER_VIEW;
+import static xyz.a1api.multirecycler.BaseMultiAdapter.LOADING_VIEW;
 
 /**
  * Created by AllenCoder on 2016/8/03.
@@ -33,7 +33,7 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
 
     private GestureDetectorCompat mGestureDetector;
     private RecyclerView recyclerView;
-    protected BaseQuickAdapter baseQuickAdapter;
+    protected BaseMultiAdapter baseQuickAdapter;
     private boolean mIsPrepressed = false;
     private boolean mIsShowPress = false;
     private View mPressedView = null;
@@ -42,11 +42,11 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
         if (recyclerView == null) {
             this.recyclerView = rv;
-            this.baseQuickAdapter = (BaseQuickAdapter) recyclerView.getAdapter();
+            this.baseQuickAdapter = (BaseMultiAdapter) recyclerView.getAdapter();
             mGestureDetector = new GestureDetectorCompat(recyclerView.getContext(), new ItemTouchHelperGestureListener(recyclerView));
         } else if (recyclerView != rv) {
             this.recyclerView = rv;
-            this.baseQuickAdapter = (BaseQuickAdapter) recyclerView.getAdapter();
+            this.baseQuickAdapter = (BaseMultiAdapter) recyclerView.getAdapter();
             mGestureDetector = new GestureDetectorCompat(recyclerView.getContext(), new ItemTouchHelperGestureListener(recyclerView));
         }
         if (!mGestureDetector.onTouchEvent(e) && e.getActionMasked() == MotionEvent.ACTION_UP && mIsShowPress) {
@@ -248,7 +248,7 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
      *                 will be a view provided by the adapter)
      * @param position The position of the view in the adapter.
      */
-    public abstract void onItemClick(BaseQuickAdapter adapter, View view, int position);
+    public abstract void onItemClick(BaseMultiAdapter adapter, View view, int position);
 
     /**
      * callback method to be invoked when an item in this view has been
@@ -258,11 +258,11 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
      * @param position The position of the view int the adapter
      * @return true if the callback consumed the long click ,false otherwise
      */
-    public abstract void onItemLongClick(BaseQuickAdapter adapter, View view, int position);
+    public abstract void onItemLongClick(BaseMultiAdapter adapter, View view, int position);
 
-    public abstract void onItemChildClick(BaseQuickAdapter adapter, View view, int position);
+    public abstract void onItemChildClick(BaseMultiAdapter adapter, View view, int position);
 
-    public abstract void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position);
+    public abstract void onItemChildLongClick(BaseMultiAdapter adapter, View view, int position);
 
     public boolean inRangeOfView(View view, MotionEvent ev) {
         int[] location = new int[2];
@@ -287,7 +287,7 @@ public abstract class SimpleClickListener implements RecyclerView.OnItemTouchLis
          */
         if (baseQuickAdapter == null) {
             if (recyclerView != null) {
-                baseQuickAdapter = (BaseQuickAdapter) recyclerView.getAdapter();
+                baseQuickAdapter = (BaseMultiAdapter) recyclerView.getAdapter();
             } else {
                 return false;
             }

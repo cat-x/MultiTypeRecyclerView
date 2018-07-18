@@ -13,9 +13,9 @@ import android.view.View;
 
 public abstract class Binder<T, VH extends BaseViewHolder> {
 
-    BaseQuickAdapter adapter;
+    BaseMultiAdapter adapter;
 
-    public BaseQuickAdapter getAdapter() {
+    public BaseMultiAdapter getAdapter() {
         return adapter;
     }
 
@@ -25,10 +25,30 @@ public abstract class Binder<T, VH extends BaseViewHolder> {
 
 //    public abstract void convert(VH holder, T item);
 
-    public abstract void convert(@NonNull VH holder, @NonNull Object item);
+    public abstract void convert(@NonNull VH holder, @NonNull T item, int position);
 
-    void bind(@NonNull BaseViewHolder holder, @NonNull Object item) {
-        convert((VH) holder, item);
+    void bind(@NonNull BaseViewHolder holder, @NonNull Object item, int position) {
+        convert((VH) holder, (T) item, position);
+    }
+
+    final void click(boolean isLong, View v, @NonNull Object item, @NonNull int position) {
+        if (isLong) {
+            onLongClick(v, (T) item, position);
+        } else {
+            onClick(v, (T) item, position);
+        }
+    }
+
+    public void onClick(View v, @NonNull T item, @NonNull int position) {
+
+    }
+
+    public void onLongClick(View view, @NonNull T item, @NonNull int position) {
+
+    }
+
+    public int getSpanSize() {
+        return 1;
     }
 
     /**
@@ -46,7 +66,7 @@ public abstract class Binder<T, VH extends BaseViewHolder> {
     }
 
 
-    public VH getViewHolder(BaseQuickAdapter adapter, View view) {
+    public VH getViewHolder(BaseMultiAdapter adapter, View view) {
         Class temp = getClass();
         Class z = null;
         while (z == null && null != temp) {
@@ -62,5 +82,6 @@ public abstract class Binder<T, VH extends BaseViewHolder> {
         }
         return vh != null ? vh : (VH) new BaseViewHolder(view);
     }
+
 
 }
