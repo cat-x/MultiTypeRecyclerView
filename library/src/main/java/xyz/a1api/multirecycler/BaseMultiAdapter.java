@@ -137,6 +137,11 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     protected @NonNull
     List<Object> mData = new LinkedList<>();
+
+    protected int getDataSize() {
+        return mData.size();
+    }
+
     public static final int HEADER_VIEW = 0x00000111;
     public static final int LOADING_VIEW = 0x00000222;
     public static final int FOOTER_VIEW = 0x00000333;
@@ -144,11 +149,11 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     private RecyclerView mRecyclerView;
 
-    protected RecyclerView getRecyclerView() {
+    protected final RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
 
-    private void setRecyclerView(RecyclerView recyclerView) {
+    protected final void setRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
     }
 
@@ -726,7 +731,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
                 count++;
             }
         } else {
-            count = getHeaderLayoutCount() + mData.size() + getFooterLayoutCount() + getLoadMoreViewCount();
+            count = getHeaderLayoutCount() + getDataSize() + getFooterLayoutCount() + getLoadMoreViewCount();
         }
         return count;
     }
@@ -759,7 +764,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             return HEADER_VIEW;
         } else {
             int adjPosition = position - numHeaders;
-            int adapterCount = mData.size();
+            int adapterCount = getDataSize();
             if (adjPosition < adapterCount) {
                 return getDefItemViewType(adjPosition);
             } else {
@@ -2163,7 +2168,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         return typePool;
     }
 
-    int indexInTypesOf(int position, @NonNull Object item) throws BinderNotFoundException {
+    protected final int indexInTypesOf(int position, @NonNull Object item) throws BinderNotFoundException {
         int index = typePool.firstIndexOf(item.getClass());
         if (index != -1) {
             @SuppressWarnings("unchecked")

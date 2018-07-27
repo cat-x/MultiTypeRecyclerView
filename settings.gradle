@@ -1,1 +1,1 @@
-include ':app', ':library', ':support-kotlin'
+include ':app', ':library', ':support-kotlin', ':PagingSupport'

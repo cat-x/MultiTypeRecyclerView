@@ -1,25 +1,6 @@
-/*
- * Copyright 2016 drakeet. https://github.com/drakeet
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package me.drakeet.multitype
+package xyz.a1api.multirecycler
 
 
-import xyz.a1api.multirecycler.BaseMultiAdapter
-import xyz.a1api.multirecycler.BaseViewHolder
-import xyz.a1api.multirecycler.Binder
 import xyz.a1api.multirecycler.multi.Linker
 import xyz.a1api.multirecycler.multi.OneToManyEndpoint
 import xyz.a1api.multirecycler.multi.OneToManyFlow
@@ -27,7 +8,7 @@ import xyz.a1api.multirecycler.multi.TypePool
 import kotlin.reflect.KClass
 
 /**
- * @author drakeet
+ * @author drakeet Cat-x
  */
 fun <T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>) {
     register(clazz.java, binder)
