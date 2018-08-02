@@ -151,57 +151,68 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
 
 
     @Override
+    @Deprecated
     public void setData(@Nullable List<Object> data) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void add(int position, @NonNull Object item) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void addData(int position, @NonNull Object data) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void addData(@NonNull Object data) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void remove(int position) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void setData(int index, @NonNull Object data) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void addData(int position, @NonNull Collection<?> newData) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void addData(@NonNull Collection<?> newData) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void replaceData(@NonNull Collection<?> data) {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @Override
+    @Deprecated
     public void clearData() {
         throw new RuntimeException("in PagedListAdapter ,you should use submitList()");
     }
 
     @NonNull
     @Override
+    @Deprecated
     public List<Object> getData() {
         throw new RuntimeException("in PagedListAdapter ,you should use getCurrentList()");
     }

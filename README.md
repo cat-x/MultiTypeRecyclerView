@@ -24,7 +24,7 @@ allprojects {
 In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.11'
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.12'
 }
 ```
 
@@ -146,6 +146,18 @@ BaseMultiAdapter().register(String::class.java, object : Binder<String, HBaseVie
                 TODO("not implemented") 
             }
         }
+```
+
+适配android Jetpack Paging分页库
+```java
+    public PagedMultiAdapter(@NonNull DiffUtil.ItemCallback<Object> diffCallback) {
+    }
+
+    public PagedMultiAdapter(@NonNull AsyncDifferConfig<Object> config) {
+    }
+    //添加数据你必须要使用PagedListAdapter规定的submitList(PagedList<Object> pagedList) 函数。
+    //操作数据方面的其他函数均已废弃，必须使用submitList(PagedList<Object> pagedList) 函数。
+    //对于绑定Adapter，如果你不使用bindToRecyclerView()函数，你需要 getRecyclerView().setAdapter(PagedMultiAdapter.getAdapter());这样绑定
 ```
 
 ##  Thanks
