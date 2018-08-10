@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name='MultiTypeRecyclerView-support-paging'
-version = '0.12'
+version = '0.13'
 
 android {
     compileSdkVersion 28
@@ -34,7 +34,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     compileOnly project(':library')
     def paging_version = "1.0.1"
-    compileOnly "android.arch.paging:runtime:$paging_version"
+    implementation "android.arch.paging:runtime:$paging_version"
     // alternatively - without Android dependencies for testing
 //    testImplementation "android.arch.paging:common:$paging_version"
     // optional - RxJava support, currently in release candidate

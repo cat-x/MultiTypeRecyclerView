@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name "MultiTypeRecyclerView"
-version = '0.12'
+version = '0.13'
 android {
     compileSdkVersion 27
 

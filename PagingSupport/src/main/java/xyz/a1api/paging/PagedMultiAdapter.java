@@ -29,22 +29,22 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
     }
 
     public PagedMultiAdapter(@NonNull DiffUtil.ItemCallback<Object> diffCallback) {
-        this(null, diffCallback);
+        super();
+        this.proxyAdapter = new ProxyAdapter(diffCallback);
     }
 
     public PagedMultiAdapter(@NonNull AsyncDifferConfig<Object> config) {
-        this(null, config);
+        super();
+        this.proxyAdapter = new ProxyAdapter(config);
     }
 
     public PagedMultiAdapter(@Nullable PagedList<Object> pagedList, @NonNull DiffUtil.ItemCallback<Object> diffCallback) {
-        super();
-        this.proxyAdapter = new ProxyAdapter(diffCallback);
+        this(diffCallback);
         submitList(pagedList);
     }
 
     public PagedMultiAdapter(@Nullable PagedList<Object> pagedList, @NonNull AsyncDifferConfig<Object> config) {
-        super();
-        this.proxyAdapter = new ProxyAdapter(config);
+        this(config);
         submitList(pagedList);
     }
 
@@ -70,7 +70,7 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
 
     @Override
     protected int getDataSize() {
-        return proxyAdapter.getItemCount();
+        return 0;
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +109,7 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
 
         @Override
         public int getItemCount() {
-            return PagedMultiAdapter.this.getItemCount();
+            return super.getItemCount() + PagedMultiAdapter.this.getItemCount();
         }
 
         @Override

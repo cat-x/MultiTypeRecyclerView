@@ -1,6 +1,7 @@
 package xyz.a1api.multirecycler
 
 
+import android.support.v7.widget.RecyclerView
 import xyz.a1api.multirecycler.multi.Linker
 import xyz.a1api.multirecycler.multi.OneToManyEndpoint
 import xyz.a1api.multirecycler.multi.OneToManyFlow
@@ -10,13 +11,34 @@ import kotlin.reflect.KClass
 /**
  * @author drakeet Cat-x
  */
-fun <T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>) {
-    register(clazz.java, binder)
+inline fun <reified T : Any> BaseMultiAdapter.setAnyData(data: List<T>) {
+    setData(data)
+}
+
+inline fun <reified T : Any> BaseMultiAdapter.addAnyData(data: List<T>) {
+    addData(data)
+}
+
+inline fun <reified T : Any> BaseMultiAdapter.addAnyData(position: Int, data: List<T>) {
+    addData(position, data)
+}
+
+inline fun <reified T : BaseMultiAdapter> RecyclerView.bindAdapter(multiAdapter: T): T {
+    return multiAdapter.bindToRecyclerView(this)
+}
+
+fun RecyclerView.bindSimpleMultiAdapter(): BaseMultiAdapter {
+    return BaseMultiAdapter().bindToRecyclerView(this)
 }
 
 
-inline fun <reified T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(binder: Binder<T, VH>) {
-    register(T::class.java, binder)
+fun <T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>): BaseMultiAdapter {
+    return register(clazz.java, binder)
+}
+
+
+inline fun <reified T : Any, VH : BaseViewHolder> BaseMultiAdapter.register(binder: Binder<T, VH>): BaseMultiAdapter {
+    return register(T::class.java, binder)
 }
 
 
@@ -40,11 +62,11 @@ fun <T : Any> TypePool.firstIndexOf(clazz: KClass<out T>): Int {
 }
 
 
-fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: KClassLinker<T>) {
-    withClassLinker { position, t -> classLinker.index(position, t).java }
+fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: KClassLinker<T>): BaseMultiAdapter {
+    return withClassLinker { position, t -> classLinker.index(position, t).java }
 }
 
 
-fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: (position: Int, t: T) -> KClass<out Binder<out BaseViewHolder, *>>) {
-    withClassLinker { position, t -> classLinker(position, t).java }
+fun <T> OneToManyEndpoint<T>.withKClassLinker(classLinker: (position: Int, t: T) -> KClass<out Binder<out BaseViewHolder, *>>): BaseMultiAdapter {
+    return withClassLinker { position, t -> classLinker(position, t).java }
 }

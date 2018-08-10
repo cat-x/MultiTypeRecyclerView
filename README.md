@@ -24,7 +24,7 @@ allprojects {
 In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.12'
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.13'
 }
 ```
 
