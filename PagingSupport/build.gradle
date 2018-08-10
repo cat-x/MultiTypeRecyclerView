@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name='MultiTypeRecyclerView-support-paging'
-version = '0.13'
+version = '0.14'
 
 android {
     compileSdkVersion 28

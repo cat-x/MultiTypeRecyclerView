@@ -24,7 +24,18 @@ allprojects {
 In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.13'
+    //全部（包含基础库、android paging分页库、 kotlin支持）
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.14'
+    //如果你已经引用上面的全部库，则无需引用下面的的单独的库
+    
+    
+    //基础库（不包含kotlin支持，减小编译体积）
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:library:0.14'
+    //android paging分页库（不包含kotlin支持，减小编译体积）；必须引用基础库
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:PagingSupport:0.14'
+    // kotlin支持库；必须引用需要基础库；可选android paging分页库
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:support-kotlin:0.14'
+    
 }
 ```
 
@@ -158,6 +169,23 @@ BaseMultiAdapter().register(String::class.java, object : Binder<String, HBaseVie
     //添加数据你必须要使用PagedListAdapter规定的submitList(PagedList<Object> pagedList) 函数。
     //操作数据方面的其他函数均已废弃，必须使用submitList(PagedList<Object> pagedList) 函数。
     //对于绑定Adapter，如果你不使用bindToRecyclerView()函数，你需要 getRecyclerView().setAdapter(PagedMultiAdapter.getAdapter());这样绑定
+```
+
+kotlin支持
+```kotlin
+//Class
+QuickLiveItemKeyList
+QuickLivePagedKeyList
+QuickLivePositionalList
+//Ex
+BaseMultiAdapter.setAnyData(data: List<T>)
+BaseMultiAdapter.addAnyData(data: List<T>)
+BaseMultiAdapter.addAnyData(position: Int, data: List<T>)
+RecyclerView.bindAdapter(multiAdapter: T): T
+RecyclerView.bindSimpleMultiAdapter(): BaseMultiAdapter
+BaseMultiAdapter.register(clazz: KClass<out T>, binder: Binder<T, VH>): BaseMultiAdapter 
+ BaseMultiAdapter.register(binder: Binder<T, VH>): BaseMultiAdapter
+//...more
 ```
 
 ##  Thanks

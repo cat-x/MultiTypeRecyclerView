@@ -5,7 +5,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name='MultiTypeRecyclerView-support-kotlin'
-version = '0.13'
+version = '0.14'
 
 android {
     compileSdkVersion 27

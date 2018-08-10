@@ -71,7 +71,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     private final LinkedHashSet<Integer> childClickViewIds;
 
     private final LinkedHashSet<Integer> itemChildLongClickViewIds;
-    private BaseMultiAdapter adapter;
+    protected BaseMultiAdapter adapter;
     /**
      * use itemView instead
      */
@@ -251,7 +251,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
-    private void handImage(String url, ImageView view, @DrawableRes int placeholderId, Drawable placeholder) {
+    protected void handImage(String url, ImageView view, @DrawableRes int placeholderId, Drawable placeholder) {
         boolean isFindGlide = false;
         boolean isFindPicasso = false;
         try {

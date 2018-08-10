@@ -70,7 +70,7 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
 
     @Override
     protected int getDataSize() {
-        return 0;
+        return proxyAdapter.getOriginalItemCount();
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +109,11 @@ public class PagedMultiAdapter extends BaseMultiAdapter {
 
         @Override
         public int getItemCount() {
-            return super.getItemCount() + PagedMultiAdapter.this.getItemCount();
+            return PagedMultiAdapter.this.getItemCount();
+        }
+
+        public int getOriginalItemCount() {
+            return super.getItemCount();
         }
 
         @Override
