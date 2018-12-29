@@ -3,9 +3,9 @@
 现在MultiTypeRecyclerView库已经完成初步释放，后续优化功能仍会增加，使MultiTypeRecyclerView库更加强大。
 完全支持Kotlin调用
 本库计划从网络上流行的众多RecyclerView适配库中整合创建出一个跟高效快捷的RecyclerView适配库。  
-目前已初步整合  
-me.drakeet.multitype:multitype,  
-com.github.CymChad:BaseRecyclerViewAdapterHelper   
+目前已整合  
+[me.drakeet.multitype:multitype](https://github.com/drakeet/MultiType) (2018年12月29日版本 multitype:3.4.4)   
+[com.github.CymChad:BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper) (2018年12月29日版本 v2.9.44)   
 计划引入  
 [ru.noties:scrollable](https://github.com/noties/Scrollable)  
 [rouchuan.viewpagerlayoutmanager:viewpagerlayoutmanager](https://github.com/leochuan/ViewPagerLayoutManager)  
@@ -25,16 +25,18 @@ In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
     //全部（包含基础库、android paging分页库、 kotlin支持）
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.14'
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.15'
     //如果你已经引用上面的全部库，则无需引用下面的的单独的库
     
     
     //基础库（不包含kotlin支持，减小编译体积）
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:library:0.14'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:library:0.15'
     //android paging分页库（不包含kotlin支持，减小编译体积）；必须引用基础库
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:PagingSupport:0.14'
-    // kotlin支持库；必须引用需要基础库；可选android paging分页库
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:support-kotlin:0.14'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support:0.15'
+    //library库的kotlin支持；必须引用需要基础库；
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:library-support-kotlin:0.15'
+    //paging分页库的kotlin支持；必须引用需要基础库和paging分页库；
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support-kotlin:0.15'
     
 }
 ```
@@ -82,9 +84,9 @@ adapter.addData(data);
 * 必须实现 convert(holder,item,position)方法 让你快速绑定布局和数据。
 > BaseViewHolder 中提供了许多方法，可以让你快速完成数据绑定。
 > 例如setText(id,value) 亦或者setImageUrl(@IdRes int viewId, String url)等等
-* 非必须 onClick( v,item,position)方法 是一个点击本View的回调函数，你可以复写它来快速满足你的点击事件的需求
-* 非必须 onClick( v,item,position)方法 是一个长按本View的回调函数，你可以复写它来快速满足你的长按事件的需求
-* 非必须 getSpanSize()方法 是当你在使用GridLayoutManager的时候，你想自定义SpanSize尺寸的时候，你直接复写对应注册类型的getSpanSize即可，无需额外设置。
+* 快捷实现 onClick( v,item,position)方法 是一个点击本View的回调函数，你可以复写它来快速满足你的点击事件的需求
+* 快捷实现 onClick( v,item,position)方法 是一个长按本View的回调函数，你可以复写它来快速满足你的长按事件的需求
+* 快捷实现 getSpanSize()方法 是当你在使用GridLayoutManager的时候，你想自定义SpanSize尺寸的时候，你直接复写对应注册类型的getSpanSize即可，无需额外设置。
 ```java
 public class MyAdapter extends BaseMultiAdapter {
     public MyAdapter() {

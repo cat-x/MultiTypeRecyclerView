@@ -5,23 +5,29 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name='MultiTypeRecyclerView-support-kotlin'
-version = '0.14'
+version = '0.15'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 14
+        targetSdkVersion 28
     }
 
 }
+configurations.all {
+    resolutionStrategy {
+        force "com.android.support:recyclerview-v7:$support_version"
+    }
+}
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:' + kotlin_version
-    compileOnly 'com.android.support:recyclerview-v7:27.1.1'
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compileOnly "com.android.support:recyclerview-v7:$support_version"
     testImplementation 'junit:junit:4.12'
     //rxjava  https://github.com/ReactiveX/RxJava
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.3'
     def paging_version = "1.0.1"
     implementation "android.arch.paging:runtime:$paging_version"
     // alternatively - without Android dependencies for testing
@@ -36,7 +42,6 @@ dependencies {
     // alternatively - just LiveData
     compileOnly "android.arch.lifecycle:livedata:$lifecycle_version"
     api project(':library')
-    api project(':PagingSupport')
 }
 
 //--------------------------------------------------------------------

@@ -1,0 +1,74 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.cat-x'
+//name='MultiTypeRecyclerView-support-kotlin'
+version = '0.15'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 28
+    }
+
+}
+configurations.all {
+    resolutionStrategy {
+        force "com.android.support:recyclerview-v7:$support_version"
+    }
+}
+
+dependencies {
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compileOnly "com.android.support:recyclerview-v7:$support_version"
+    testImplementation 'junit:junit:4.12'
+    //rxjava  https://github.com/ReactiveX/RxJava
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.3'
+    def paging_version = "1.0.1"
+    implementation "android.arch.paging:runtime:$paging_version"
+    // alternatively - without Android dependencies for testing
+    testCompileOnly "android.arch.paging:common:$paging_version"
+    // optional - RxJava support, currently in release candidate
+    compileOnly "android.arch.paging:rxjava2:1.0.1"
+    def lifecycle_version = "1.1.1"
+    // ViewModel and LiveData
+    compileOnly "android.arch.lifecycle:extensions:$lifecycle_version"
+    // alternatively - just ViewModel
+    compileOnly "android.arch.lifecycle:viewmodel:$lifecycle_version" // use -ktx for Kotlin
+    // alternatively - just LiveData
+    compileOnly "android.arch.lifecycle:livedata:$lifecycle_version"
+    api project(':library')
+    api project(':paging-support')
+}
+
+//--------------------------------------------------------------------
+task generateSourcesJar(type: Jar) {
+    group = 'jar'
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = javadoc.destinationDir
+}
+
+task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
+    group = 'jar'
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives generateJavadoc
+    archives generateSourcesJar
+}
