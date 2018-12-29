@@ -37,7 +37,7 @@ configurations.all {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    compileOnly project(':library')
+    api project(':library')
     def paging_version = "1.0.1"
     implementation "android.arch.paging:runtime:$paging_version"
     // alternatively - without Android dependencies for testing

@@ -4,6 +4,7 @@ import android.support.v7.recyclerview.extensions.AsyncDifferConfig
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import xyz.a1api.multirecycler.multi.OneToManyFlow
+import xyz.a1api.paging.PagedMultiAdapter
 import kotlin.reflect.KClass
 
 /**
