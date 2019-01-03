@@ -25,18 +25,18 @@ In your Application Dir `build.gradle`:
 ```groovy
 dependencies {
     //全部（包含基础库、android paging分页库、 kotlin支持）
-    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.15'
+    implementation 'com.github.cat-x:MultiTypeRecyclerView:0.17'
     //如果你已经引用上面的全部库，则无需引用下面的的单独的库
     
     
     //基础库（不包含kotlin支持，减小编译体积）
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:library:0.15'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:library:0.17'
     //android paging分页库（不包含kotlin支持，减小编译体积）；必须引用基础库
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support:0.15'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support:0.17'
     //library库的kotlin支持；必须引用需要基础库；
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:library-support-kotlin:0.15'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:library-support-kotlin:0.17'
     //paging分页库的kotlin支持；必须引用需要基础库和paging分页库；
-    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support-kotlin:0.15'
+    implementation 'com.github.cat-x.MultiTypeRecyclerView:paging-support-kotlin:0.17'
     
 }
 ```

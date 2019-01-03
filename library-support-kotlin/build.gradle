@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.cat-x'
 //name='MultiTypeRecyclerView-support-kotlin'
-version = '0.15'
+version = "$version"
 
 android {
     compileSdkVersion 28
@@ -70,4 +70,7 @@ task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
 artifacts {
     archives generateJavadoc
     archives generateSourcesJar
+}
+androidExtensions{
+    experimental = true
 }

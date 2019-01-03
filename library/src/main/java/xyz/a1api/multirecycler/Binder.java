@@ -15,8 +15,15 @@ public abstract class Binder<T, VH extends BaseViewHolder> {
 
     BaseMultiAdapter adapter;
 
+    @SuppressWarnings("WeakerAccess")
+    protected VH viewHolder;
+
     public BaseMultiAdapter getAdapter() {
         return adapter;
+    }
+
+    public VH getViewHolder() {
+        return viewHolder;
     }
 
     public abstract @LayoutRes
@@ -80,7 +87,8 @@ public abstract class Binder<T, VH extends BaseViewHolder> {
         } else {
             vh = ClassUtil.createGenericKInstance(adapter, z, view);
         }
-        return vh != null ? vh : (VH) new BaseViewHolder(view);
+        viewHolder = vh != null ? vh : (VH) new BaseViewHolder(view);
+        return viewHolder;
     }
 
 
