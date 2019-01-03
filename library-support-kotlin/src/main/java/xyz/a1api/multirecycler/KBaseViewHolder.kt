@@ -8,7 +8,6 @@ import kotlinx.android.extensions.LayoutContainer
  * For MultiTypeRecyclerView
  * Cat-x All Rights Reserved
  */
-abstract class KBinder<T, VH : BaseViewHolder> : Binder<T, VH>(), LayoutContainer {
-    override val containerView: View?
-        get() = viewHolder.itemView
+abstract class KBaseViewHolder(override val containerView: View?) : BaseViewHolder(containerView), LayoutContainer {
+
 }
