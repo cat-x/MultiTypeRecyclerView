@@ -1001,7 +1001,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             @Override
             public void onClick(View v) {
                 int position = baseViewHolder.getLayoutPosition() - getHeaderLayoutCount();
-                binder.click(false, v, getItem(position - getHeaderLayoutCount()), position);
+                binder.click(false, v, getItem(position), position);
                 if (getOnItemClickListener() != null) {
                     performItemClick(v, position);
                 }
@@ -1013,7 +1013,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             @Override
             public boolean onLongClick(View v) {
                 int position = baseViewHolder.getLayoutPosition() - getHeaderLayoutCount();
-                binder.click(true, v, getItem(position - getHeaderLayoutCount()), position);
+                binder.click(true, v, getItem(position), position);
                 if (getOnItemLongClickListener() != null) {
                     return performItemLongClick(v, position);
                 } else {
@@ -1127,7 +1127,11 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
      * @param header
      */
     public int addHeaderView(View header) {
-        return addHeaderView(header, -1);
+        return addHeaderView(header, null);
+    }
+
+    public int addHeaderView(View header, @Nullable LinearLayout.LayoutParams layoutParams) {
+        return addHeaderView(header, -1, layoutParams);
     }
 
     /**
@@ -1144,12 +1148,20 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         return addHeaderView(header, index, LinearLayout.VERTICAL);
     }
 
+    public int addHeaderView(View header, int index, @Nullable LinearLayout.LayoutParams layoutParams) {
+        return addHeaderView(header, index, LinearLayout.VERTICAL, layoutParams);
+    }
+
+    public int addHeaderView(View header, int index, int orientation) {
+        return addHeaderView(header, index, orientation, null);
+    }
+
     /**
      * @param header
      * @param index
      * @param orientation
      */
-    public int addHeaderView(View header, int index, int orientation) {
+    public int addHeaderView(View header, int index, int orientation, @Nullable LinearLayout.LayoutParams layoutParams) {
         if (mHeaderLayout == null) {
             mHeaderLayout = new LinearLayout(header.getContext());
             if (orientation == LinearLayout.VERTICAL) {
@@ -1164,7 +1176,11 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         if (index < 0 || index > childCount) {
             index = childCount;
         }
-        mHeaderLayout.addView(header, index);
+        if (layoutParams != null) {
+            mHeaderLayout.addView(header, index, layoutParams);
+        } else {
+            mHeaderLayout.addView(header, index);
+        }
         if (mHeaderLayout.getChildCount() == 1) {
             int position = getHeaderViewPosition();
             if (position != -1) {
@@ -1175,19 +1191,31 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     }
 
     public int setHeaderView(View header) {
-        return setHeaderView(header, 0, LinearLayout.VERTICAL);
+        return setHeaderView(header, 0, LinearLayout.VERTICAL,null);
+    }
+
+    public int setHeaderView(View header,@Nullable LinearLayout.LayoutParams layoutParams) {
+        return setHeaderView(header, 0, LinearLayout.VERTICAL,layoutParams);
     }
 
     public int setHeaderView(View header, int index) {
-        return setHeaderView(header, index, LinearLayout.VERTICAL);
+        return setHeaderView(header, index, LinearLayout.VERTICAL,null);
     }
 
-    public int setHeaderView(View header, int index, int orientation) {
+    public int setHeaderView(View header, int index,@Nullable LinearLayout.LayoutParams layoutParams) {
+        return setHeaderView(header, index, LinearLayout.VERTICAL,layoutParams);
+    }
+
+    public int setHeaderView(View header, int index, int orientation,@Nullable LinearLayout.LayoutParams layoutParams) {
         if (mHeaderLayout == null || mHeaderLayout.getChildCount() <= index) {
-            return addHeaderView(header, index, orientation);
+            return addHeaderView(header, index, orientation,layoutParams);
         } else {
             mHeaderLayout.removeViewAt(index);
-            mHeaderLayout.addView(header, index);
+            if (layoutParams == null){
+                mHeaderLayout.addView(header, index);
+            }else {
+                mHeaderLayout.addView(header, index,layoutParams);
+            }
             return index;
         }
     }

@@ -53,6 +53,11 @@ public class MultiLayoutManger {
         return layoutManager;
     }
 
+    public static <LM extends RecyclerView.LayoutManager> LM bindLayoutManager(final RecyclerView recyclerView, LM layoutManager) {
+        recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
+    }
+
     public static <LM extends RecyclerView.LayoutManager> LM setReverseLayout(LM layoutManager, boolean reverseLayout) {
         if (layoutManager instanceof LinearLayoutManager) {
             ((LinearLayoutManager) layoutManager).setReverseLayout(reverseLayout);
