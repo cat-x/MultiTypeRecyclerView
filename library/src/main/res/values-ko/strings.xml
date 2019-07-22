@@ -1,0 +1,5 @@
+<resources>
+    <string name="brvah_loading">로드 중 …</string>
+    <string name="brvah_load_failed">데이터를로드하지 못했습니다.</string>
+    <string name="brvah_load_end">데이터가 더 이상 없음</string>
+</resources>

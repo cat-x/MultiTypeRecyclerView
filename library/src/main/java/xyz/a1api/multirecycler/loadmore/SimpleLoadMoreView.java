@@ -28,4 +28,16 @@ public final class SimpleLoadMoreView extends LoadMoreView {
     protected int getLoadEndViewId() {
         return R.id.load_more_load_end_view;
     }
+
+    public int getLoadingTextViewId() {
+        return R.id.loading_text;
+    }
+
+    public int getLoadFailedTextViewId() {
+        return R.id.load_failed_text;
+    }
+
+    public int getLoadEndTextViewId() {
+        return R.id.load_end_text;
+    }
 }

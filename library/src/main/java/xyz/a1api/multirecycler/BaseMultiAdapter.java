@@ -79,7 +79,7 @@ public class BaseMultiAdapter extends RecyclerView.Adapter<BaseViewHolder> {
     private boolean mNextLoadEnable = false;
     private boolean mLoadMoreEnable = false;
     private boolean mLoading = false;
-    private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
+    protected LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
     private RequestLoadMoreListener mRequestLoadMoreListener;
     private boolean mEnableLoadMoreEndClick = false;
 

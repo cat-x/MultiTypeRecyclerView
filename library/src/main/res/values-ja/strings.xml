@@ -1,0 +1,5 @@
+<resources>
+    <string name="brvah_loading">読み込み中…</string>
+    <string name="brvah_load_failed">データを読み込めませんでした</string>
+    <string name="brvah_load_end">これ以上データなし</string>
+</resources>
