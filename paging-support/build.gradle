@@ -39,7 +39,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     api project(':library')
     def paging_version = "1.0.1"
-    implementation "android.arch.paging:runtime:$paging_version"
+    compileOnly "android.arch.paging:runtime:$paging_version"
     // alternatively - without Android dependencies for testing
 //    testImplementation "android.arch.paging:common:$paging_version"
     // optional - RxJava support, currently in release candidate
